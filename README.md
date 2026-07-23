@@ -108,4 +108,6 @@ Fintrack-Pro/
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more details.
+Copyright © 2026 **FinCodeLabs**. All Rights Reserved. Proprietary and Confidential.  
+See [LICENSE](file:///d:/fintrack-pro/LICENSE) for details.
+

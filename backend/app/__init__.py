@@ -1,0 +1,1 @@
+"""FinTrack Pro Backend Application."""

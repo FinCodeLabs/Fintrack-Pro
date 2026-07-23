@@ -51,7 +51,7 @@ cd Fintrack-Pro
 
 #### 2. Frontend Setup
 ```bash
-cd frontend
+cd fintrack-pro/frontend
 npm install
 npm run dev
 ```
@@ -59,7 +59,7 @@ npm run dev
 
 #### 3. Backend Setup
 ```bash
-cd backend
+cd fintrack-pro/backend
 python -m venv venv
 # On Windows PowerShell:
 .\venv\Scripts\Activate.ps1
@@ -78,7 +78,7 @@ uvicorn app.main:app --reload
 To launch the complete application stack with Docker Compose:
 
 ```bash
-docker-compose -f docker/docker-compose.yml up --build
+docker-compose -f fintrack-pro/docker/docker-compose.yml up --build
 ```
 
 ---
@@ -87,20 +87,15 @@ docker-compose -f docker/docker-compose.yml up --build
 
 ```text
 Fintrack-Pro/
-├── frontend/               # React + Vite + TypeScript web application
-│   ├── src/
-│   │   ├── components/    # Reusable UI & Layout components
-│   │   ├── features/      # Feature modules (analytics, auth, dashboard, insights, transactions)
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── store/         # Zustand global state stores
-│   │   └── index.css      # Core design system & CSS utilities
-├── backend/                # FastAPI backend service
-│   ├── app/
-│   │   ├── api/           # API endpoints (v1)
-│   │   ├── models/        # SQLAlchemy models
-│   │   ├── schemas/       # Pydantic schemas
-│   │   └── services/      # Business logic services
-├── docker/                 # Dockerfiles & docker-compose configuration
+├── fintrack-pro/           # Primary application source folder
+│   ├── .vscode/           # VS Code workspace settings
+│   ├── backend/           # FastAPI backend service
+│   │   ├── app/           # API endpoints, models, schemas & services
+│   ├── docker/            # Dockerfiles & docker-compose configuration
+│   ├── docs/              # Additional documentation
+│   └── frontend/          # React + Vite + TypeScript web application
+├── .gitignore
+├── LICENSE                # Proprietary copyright license
 └── README.md
 ```
 

@@ -2,7 +2,7 @@
 
 > **FinTrack Pro** is a modern, full-stack, AI-powered personal financial management application designed to give you real-time visibility into your income, expenses, budgets, savings goals, and financial health.
 
-![FinTrack Pro](/docs/screenshot-placeholder.png) <!-- Replace with actual screenshot if available -->
+[![Live Website](https://img.shields.io/badge/🌐_Visit_Website-Live_Demo-007ACC?style=for-the-badge)](https://fincodelabs.github.io/Fintrack-Pro/)
 
 ---
 
@@ -104,5 +104,5 @@ Fintrack-Pro/
 ## 📄 License
 
 Copyright © 2026 **FinCodeLabs**. All Rights Reserved. Proprietary and Confidential.  
-See [LICENSE](file:///d:/fintrack-pro/LICENSE) for details.
+See [LICENSE](./LICENSE) for details.
 

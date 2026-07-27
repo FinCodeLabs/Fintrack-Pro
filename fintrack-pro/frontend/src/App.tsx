@@ -395,6 +395,7 @@ export function App() {
       currentTab={currentTab}
       setTab={setTab}
       categories={categories}
+      transactions={transactions}
       onAddTransaction={handleAddTransaction}
     >
       {currentTab === 'dashboard' && (
@@ -426,7 +427,18 @@ export function App() {
         <SavingsPage savings={savings} onAddGoal={handleAddSavingsGoal} onDeposit={handleDepositSavings} />
       )}
       {currentTab === 'analytics' && <AnalyticsPage />}
-      {currentTab === 'insights' && <InsightsPage insights={insights} />}
+      {currentTab === 'insights' && (
+        <InsightsPage
+          insights={insights}
+          transactions={transactions}
+          budgets={budgets}
+          savings={savings}
+          onNewTransaction={() => {
+            const btn = document.querySelector('header button') as HTMLButtonElement;
+            if (btn) btn.click();
+          }}
+        />
+      )}
       {currentTab === 'settings' && <SettingsPage />}
     </AppLayout>
   );

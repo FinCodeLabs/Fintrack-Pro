@@ -6,8 +6,8 @@ import { Sparkles, KeyRound, Mail, ArrowRight } from 'lucide-react';
 
 export const LoginPage: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchToRegister }) => {
   const { login, loginAsDemo, isLoading } = useAuthStore();
-  const [email, setEmail] = useState('demo@fintrackpro.com');
-  const [password, setPassword] = useState('DemoPassword123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {

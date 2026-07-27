@@ -216,6 +216,7 @@ export function App() {
   const [currentTab, setTab] = useState<string>('dashboard');
 
   const userId = user?.id || 1;
+  const isDemo = userId === 1;
 
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
 
@@ -224,7 +225,7 @@ export function App() {
       const saved = localStorage.getItem(`fintrack_transactions_${userId}`);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return INITIAL_TRANSACTIONS;
+    return isDemo ? INITIAL_TRANSACTIONS : [];
   });
 
   const [budgets, setBudgets] = useState<Budget[]>(() => {
@@ -232,7 +233,7 @@ export function App() {
       const saved = localStorage.getItem(`fintrack_budgets_${userId}`);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return INITIAL_BUDGETS;
+    return isDemo ? INITIAL_BUDGETS : [];
   });
 
   const [savings, setSavings] = useState<SavingsGoal[]>(() => {
@@ -240,7 +241,7 @@ export function App() {
       const saved = localStorage.getItem(`fintrack_savings_${userId}`);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return INITIAL_SAVINGS;
+    return isDemo ? INITIAL_SAVINGS : [];
   });
 
   const [insights, setInsights] = useState<FinancialInsight[]>(() => {
@@ -248,7 +249,7 @@ export function App() {
       const saved = localStorage.getItem(`fintrack_insights_${userId}`);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return INITIAL_INSIGHTS;
+    return isDemo ? INITIAL_INSIGHTS : [];
   });
 
   useEffect(() => {
@@ -259,17 +260,18 @@ export function App() {
   useEffect(() => {
     if (user) {
       try {
+        const isUserDemo = user.id === 1;
         const txs = localStorage.getItem(`fintrack_transactions_${user.id}`);
-        setTransactions(txs ? JSON.parse(txs) : INITIAL_TRANSACTIONS);
+        setTransactions(txs ? JSON.parse(txs) : isUserDemo ? INITIAL_TRANSACTIONS : []);
 
         const bgt = localStorage.getItem(`fintrack_budgets_${user.id}`);
-        setBudgets(bgt ? JSON.parse(bgt) : INITIAL_BUDGETS);
+        setBudgets(bgt ? JSON.parse(bgt) : isUserDemo ? INITIAL_BUDGETS : []);
 
         const svg = localStorage.getItem(`fintrack_savings_${user.id}`);
-        setSavings(svg ? JSON.parse(svg) : INITIAL_SAVINGS);
+        setSavings(svg ? JSON.parse(svg) : isUserDemo ? INITIAL_SAVINGS : []);
 
         const ins = localStorage.getItem(`fintrack_insights_${user.id}`);
-        setInsights(ins ? JSON.parse(ins) : INITIAL_INSIGHTS);
+        setInsights(ins ? JSON.parse(ins) : isUserDemo ? INITIAL_INSIGHTS : []);
       } catch {}
     }
   }, [user?.id]);

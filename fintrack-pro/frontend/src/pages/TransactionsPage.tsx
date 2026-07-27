@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Filter, Download, Plus, Trash2, Tag, Calendar, MapPin } from 'lucide-react';
+import { Search, Filter, Download, Plus, Trash2, Tag, Calendar, MapPin, Inbox } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { useAuthStore } from '../store/authStore';
 import { Transaction } from '../types';
 
@@ -36,7 +35,29 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
   });
 
   const handleExportCSV = () => {
-    window.open('/api/v1/export/transactions/csv', '_blank');
+    if (transactions.length === 0) {
+      alert('No transactions logged to export.');
+      return;
+    }
+
+    const headers = ['ID', 'Type', 'Description', 'Category', 'Amount', 'Date'];
+    const rows = transactions.map((t) => [
+      t.id,
+      t.type,
+      `"${(t.description || '').replace(/"/g, '""')}"`,
+      `"${(t.category_name || '').replace(/"/g, '""')}"`,
+      (t.amount_cents / 100).toFixed(2),
+      t.transaction_date,
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `fintrack_transactions_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -98,66 +119,83 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
 
       {/* Transactions Data Table */}
       <Card className="p-0 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-900/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
-              <tr>
-                <th className="px-6 py-4">Transaction</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Amount</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {filteredTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="px-6 py-4 font-semibold text-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-base">
-                        {tx.category_icon || (tx.type === 'income' ? '💰' : '📦')}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-100">{tx.description || 'Transaction'}</p>
-                        {tx.location && (
-                          <p className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" /> {tx.location}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-800 border border-slate-700 text-slate-300">
-                      <Tag className="w-3 h-3 text-emerald-400" />
-                      {tx.category_name || 'General'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-mono text-slate-400">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                      {tx.transaction_date}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-extrabold text-sm">
-                    <span className={tx.type === 'income' ? 'text-emerald-400' : 'text-slate-100'}>
-                      {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount_cents)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => onDeleteTransaction(tx.id)}
-                      title="Delete"
-                      className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
+        {filteredTransactions.length === 0 ? (
+          <div className="text-center py-16 px-4 space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 mx-auto flex items-center justify-center text-slate-500">
+              <Inbox className="w-7 h-7" />
+            </div>
+            <h3 className="text-base font-bold text-slate-200">No transactions found</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              {transactions.length === 0
+                ? 'Your transaction ledger is currently empty. Add your first income or expense to get started!'
+                : 'No transactions match your search filter criteria.'}
+            </p>
+            <Button variant="primary" size="md" onClick={onNewTransaction} className="mt-2">
+              + Add Transaction
+            </Button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-slate-900/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                  <th className="px-6 py-4">Transaction</th>
+                  <th className="px-6 py-4">Category</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Amount</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {filteredTransactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-slate-800/40 transition-colors">
+                    <td className="px-6 py-4 font-semibold text-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-base">
+                          {tx.category_icon || (tx.type === 'income' ? '💰' : '📦')}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-100">{tx.description || 'Transaction'}</p>
+                          {tx.location && (
+                            <p className="text-[10px] text-slate-400 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" /> {tx.location}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-800 border border-slate-700 text-slate-300">
+                        <Tag className="w-3 h-3 text-emerald-400" />
+                        {tx.category_name || 'General'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                        {tx.transaction_date}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-extrabold text-sm">
+                      <span className={tx.type === 'income' ? 'text-emerald-400' : 'text-slate-100'}>
+                        {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount_cents)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => onDeleteTransaction(tx.id)}
+                        title="Delete"
+                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
     </div>
   );

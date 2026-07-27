@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useAuthStore } from '../store/authStore';
-import { Sparkles, KeyRound, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Sparkles, KeyRound, Mail, ArrowRight } from 'lucide-react';
 
 export const LoginPage: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchToRegister }) => {
   const { login, loginAsDemo, isLoading } = useAuthStore();
@@ -63,14 +63,6 @@ export const LoginPage: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwit
             {isLoading ? 'Signing In...' : 'Sign In'} <ArrowRight className="w-4 h-4" />
           </Button>
         </form>
-
-        <div className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-            <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Default Demo Account</span>
-          </div>
-          <p className="text-xs text-slate-300 font-mono">Email: demo@fintrackpro.com</p>
-          <p className="text-xs text-slate-300 font-mono">Password: DemoPassword123!</p>
-        </div>
 
         <div className="pt-2 border-t border-slate-800 space-y-3 text-center">
           <Button variant="secondary" onClick={loginAsDemo} className="w-full flex items-center justify-center gap-2 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10">

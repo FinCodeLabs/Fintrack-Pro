@@ -211,24 +211,100 @@ const INITIAL_INSIGHTS: FinancialInsight[] = [
 ];
 
 export function App() {
-  const { isAuthenticated, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, checkAuth } = useAuthStore();
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [currentTab, setTab] = useState<string>('dashboard');
 
+  const userId = user?.id || 1;
+
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  const [budgets, setBudgets] = useState<Budget[]>(INITIAL_BUDGETS);
-  const [savings, setSavings] = useState<SavingsGoal[]>(INITIAL_SAVINGS);
-  const [insights, setInsights] = useState<FinancialInsight[]>(INITIAL_INSIGHTS);
+
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const saved = localStorage.getItem(`fintrack_transactions_${userId}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_TRANSACTIONS;
+  });
+
+  const [budgets, setBudgets] = useState<Budget[]>(() => {
+    try {
+      const saved = localStorage.getItem(`fintrack_budgets_${userId}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_BUDGETS;
+  });
+
+  const [savings, setSavings] = useState<SavingsGoal[]>(() => {
+    try {
+      const saved = localStorage.getItem(`fintrack_savings_${userId}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_SAVINGS;
+  });
+
+  const [insights, setInsights] = useState<FinancialInsight[]>(() => {
+    try {
+      const saved = localStorage.getItem(`fintrack_insights_${userId}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_INSIGHTS;
+  });
 
   useEffect(() => {
     checkAuth();
   }, []);
 
+  // Sync state when active user changes
+  useEffect(() => {
+    if (user) {
+      try {
+        const txs = localStorage.getItem(`fintrack_transactions_${user.id}`);
+        setTransactions(txs ? JSON.parse(txs) : INITIAL_TRANSACTIONS);
+
+        const bgt = localStorage.getItem(`fintrack_budgets_${user.id}`);
+        setBudgets(bgt ? JSON.parse(bgt) : INITIAL_BUDGETS);
+
+        const svg = localStorage.getItem(`fintrack_savings_${user.id}`);
+        setSavings(svg ? JSON.parse(svg) : INITIAL_SAVINGS);
+
+        const ins = localStorage.getItem(`fintrack_insights_${user.id}`);
+        setInsights(ins ? JSON.parse(ins) : INITIAL_INSIGHTS);
+      } catch {}
+    }
+  }, [user?.id]);
+
+  // Persist transactions
+  useEffect(() => {
+    if (user) {
+      try {
+        localStorage.setItem(`fintrack_transactions_${user.id}`, JSON.stringify(transactions));
+      } catch {}
+    }
+  }, [transactions, user?.id]);
+
+  // Persist budgets
+  useEffect(() => {
+    if (user) {
+      try {
+        localStorage.setItem(`fintrack_budgets_${user.id}`, JSON.stringify(budgets));
+      } catch {}
+    }
+  }, [budgets, user?.id]);
+
+  // Persist savings
+  useEffect(() => {
+    if (user) {
+      try {
+        localStorage.setItem(`fintrack_savings_${user.id}`, JSON.stringify(savings));
+      } catch {}
+    }
+  }, [savings, user?.id]);
+
   const handleAddTransaction = (newTx: Partial<Transaction>) => {
     const tx: Transaction = {
       id: Date.now(),
-      user_id: 1,
+      user_id: userId,
       category_id: newTx.category_id,
       amount_cents: newTx.amount_cents || 0,
       type: newTx.type || 'expense',
@@ -244,7 +320,6 @@ export function App() {
     };
     setTransactions((prev) => [tx, ...prev]);
 
-    // Also send to backend API asynchronously if available
     api.createTransaction(tx).catch(() => {});
   };
 
@@ -256,7 +331,7 @@ export function App() {
   const handleAddBudget = (b: Partial<Budget>) => {
     const budget: Budget = {
       id: Date.now(),
-      user_id: 1,
+      user_id: userId,
       category_id: b.category_id || 1,
       month: b.month || new Date().getMonth() + 1,
       year: b.year || new Date().getFullYear(),
@@ -276,7 +351,7 @@ export function App() {
   const handleAddSavingsGoal = (g: Partial<SavingsGoal>) => {
     const goal: SavingsGoal = {
       id: Date.now(),
-      user_id: 1,
+      user_id: userId,
       name: g.name || 'New Goal',
       icon: g.icon || '🎯',
       target_cents: g.target_cents || 100000,

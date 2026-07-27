@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -38,6 +38,15 @@ jobs:
       - name: Build frontend
         run: npm run build
         working-directory: fintrack-pro/frontend
+
+      - name: Create .nojekyll in build output
+        run: touch fintrack-pro/frontend/dist/.nojekyll
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: fintrack-pro/frontend/dist
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

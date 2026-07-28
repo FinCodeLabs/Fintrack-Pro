@@ -254,6 +254,20 @@ export function App() {
 
   useEffect(() => {
     checkAuth();
+    // Auto migration check to purge stale emoji cache from browser localStorage
+    const CURRENT_VERSION = 'v2_vector_professional';
+    const savedVer = localStorage.getItem('fintrack_app_version');
+    if (savedVer !== CURRENT_VERSION) {
+      localStorage.removeItem('fintrack_transactions_1');
+      localStorage.removeItem('fintrack_budgets_1');
+      localStorage.removeItem('fintrack_savings_1');
+      localStorage.removeItem('fintrack_insights_1');
+      localStorage.setItem('fintrack_app_version', CURRENT_VERSION);
+      setTransactions(INITIAL_TRANSACTIONS);
+      setBudgets(INITIAL_BUDGETS);
+      setSavings(INITIAL_SAVINGS);
+      setInsights(INITIAL_INSIGHTS);
+    }
   }, []);
 
   // Sync state when active user changes
@@ -355,7 +369,7 @@ export function App() {
       id: Date.now(),
       user_id: userId,
       name: g.name || 'New Goal',
-      icon: g.icon || '🎯',
+      icon: g.icon || 'target',
       target_cents: g.target_cents || 100000,
       current_cents: g.current_cents || 0,
       remaining_cents: g.target_cents || 100000,

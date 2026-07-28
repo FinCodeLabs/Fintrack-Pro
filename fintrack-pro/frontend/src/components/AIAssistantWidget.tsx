@@ -30,8 +30,8 @@ export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'ai',
-      text: `Hello ${user?.full_name?.split(' ')[0] || 'there'}! 👋 I'm your AI Financial Assistant. I can guide you step-by-step to set up your budget, log transactions, and optimize your financial health score.`,
-      action: { label: '🚀 Start 1-Minute Guided Tour' },
+      text: `Hello ${user?.full_name?.split(' ')[0] || 'there'}! I'm your AI Financial Assistant. I can guide you step-by-step to set up your budget, log transactions, and optimize your financial health score.`,
+      action: { label: 'Start 1-Minute Guided Tour' },
     },
   ]);
 
@@ -221,19 +221,19 @@ export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
               onClick={() => handleSendMessage('How do I log a transaction?')}
               className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap border border-slate-700/60"
             >
-              💬 Add Transaction
+              Add Transaction
             </button>
             <button
               onClick={() => handleSendMessage('How is my Health Score calculated?')}
               className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap border border-slate-700/60"
             >
-              💬 AI Health Score
+              AI Health Score
             </button>
             <button
               onClick={() => handleSendMessage('How do I export to CSV?')}
               className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white whitespace-nowrap border border-slate-700/60"
             >
-              💬 Export CSV
+              Export CSV
             </button>
           </div>
 

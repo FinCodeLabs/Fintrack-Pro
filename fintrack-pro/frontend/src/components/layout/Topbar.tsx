@@ -104,48 +104,51 @@ export const Topbar: React.FC<TopbarProps> = ({ title, currentTab, setTab, onQui
   ];
 
   return (
-    <header className="h-16 sm:h-20 border-b border-[#1e2333] bg-[#0b0e14]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 sm:h-20 border-b border-[#1e2333] bg-[#0b0e14]/90 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 gap-2">
       {/* Mobile Drawer Trigger & Title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
         <button
           onClick={onToggleMobileNav}
-          className="p-2 text-slate-400 hover:text-white bg-[#131722] border border-[#1e2333] rounded-xl md:hidden"
+          className="p-2 text-slate-400 hover:text-white bg-[#131722] border border-[#1e2333] rounded-xl md:hidden shrink-0"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex md:hidden items-center justify-center font-black">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex md:hidden items-center justify-center font-black shrink-0">
             <ShieldCheck className="w-4 h-4 text-slate-950" />
           </div>
-          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">{title}</h2>
+          <h2 className="text-base sm:text-lg lg:text-xl font-bold text-white tracking-tight truncate">{title}</h2>
         </div>
       </div>
 
       {/* Right Action Icons matching Image 2 */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 lg:gap-3 shrink-0">
         {/* Currency Switcher */}
         <div className="hidden sm:flex items-center bg-[#131722] rounded-xl p-1 border border-[#1e2333]">
           {currencies.map((c) => (
             <button
               key={c.code}
               onClick={() => setCurrency(c.code)}
-              className={`px-2 py-1 text-[11px] font-bold rounded-lg transition-all ${
+              title={`${c.symbol} (${c.code})`}
+              className={`px-2 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 ${
                 currency === c.code
                   ? 'bg-emerald-500 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {c.symbol} {c.code}
+              <span>{c.symbol}</span>
+              <span className="hidden xl:inline">{c.code}</span>
             </button>
           ))}
         </div>
 
         {/* Quick Add Button */}
-        <Button variant="primary" size="md" onClick={onQuickAdd} className="px-3 sm:px-4 text-xs font-semibold">
+        <Button variant="primary" size="md" onClick={onQuickAdd} className="px-2.5 sm:px-3 lg:px-4 text-xs font-semibold">
           <Plus className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline">New Transaction</span>
+          <span className="hidden lg:inline">New Transaction</span>
+          <span className="hidden sm:inline lg:hidden">Add</span>
           <span className="sm:hidden">Add</span>
         </Button>
 

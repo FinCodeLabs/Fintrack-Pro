@@ -103,14 +103,6 @@ export const Topbar: React.FC<TopbarProps> = ({ title, currentTab, setTab, onQui
     { code: 'INR', symbol: '₹' },
   ];
 
-  const headerTabs = [
-    { id: 'dashboard', label: 'Overview' },
-    { id: 'transactions', label: 'Transactions' },
-    { id: 'budgets', label: 'Budgets' },
-    { id: 'savings', label: 'Saving goals' },
-    { id: 'insights', label: 'AI Insights' },
-  ];
-
   return (
     <header className="h-16 sm:h-20 border-b border-[#1e2333] bg-[#0b0e14]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
       {/* Mobile Drawer Trigger & Title */}
@@ -123,28 +115,11 @@ export const Topbar: React.FC<TopbarProps> = ({ title, currentTab, setTab, onQui
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex md:hidden items-center justify-center font-black">
             <ShieldCheck className="w-4 h-4 text-slate-950" />
           </div>
-          <h2 className="text-base sm:text-xl font-bold text-white tracking-tight md:hidden">{title}</h2>
-        </div>
-
-        {/* Desktop / Tablet Header Navigation Tabs matching Image 2 */}
-        <div className="hidden md:flex items-center gap-1 bg-[#131722] p-1 rounded-xl border border-[#1e2333]">
-          {headerTabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                currentTab === t.id
-                  ? 'bg-[#1e2333] text-white shadow-sm border border-[#2a3045]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#181c2b]'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">{title}</h2>
         </div>
       </div>
 

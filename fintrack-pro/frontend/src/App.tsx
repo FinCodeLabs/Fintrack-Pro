@@ -14,14 +14,14 @@ import { Transaction, Budget, SavingsGoal, Category, FinancialInsight } from './
 import { api } from './lib/api';
 
 const DEFAULT_CATEGORIES: Category[] = [
-  { id: 1, name: 'Salary', icon: '💰', color: '#10B981', type: 'income', is_system: true, sort_order: 1 },
-  { id: 2, name: 'Freelance', icon: '💻', color: '#3B82F6', type: 'income', is_system: true, sort_order: 2 },
-  { id: 3, name: 'Housing & Rent', icon: '🏠', color: '#EF4444', type: 'expense', is_system: true, sort_order: 3 },
-  { id: 4, name: 'Groceries & Food', icon: '🛒', color: '#F59E0B', type: 'expense', is_system: true, sort_order: 4 },
-  { id: 5, name: 'Dining & Cafes', icon: '🍔', color: '#EC4899', type: 'expense', is_system: true, sort_order: 5 },
-  { id: 6, name: 'Transportation', icon: '🚗', color: '#06B6D4', type: 'expense', is_system: true, sort_order: 6 },
-  { id: 7, name: 'Utilities & Bills', icon: '⚡', color: '#6366F1', type: 'expense', is_system: true, sort_order: 7 },
-  { id: 8, name: 'Shopping', icon: '🛍️', color: '#84CC16', type: 'expense', is_system: true, sort_order: 8 },
+  { id: 1, name: 'Salary', icon: 'salary', color: '#10B981', type: 'income', is_system: true, sort_order: 1 },
+  { id: 2, name: 'Freelance', icon: 'freelance', color: '#3B82F6', type: 'income', is_system: true, sort_order: 2 },
+  { id: 3, name: 'Housing & Rent', icon: 'housing', color: '#EF4444', type: 'expense', is_system: true, sort_order: 3 },
+  { id: 4, name: 'Groceries & Food', icon: 'groceries', color: '#F59E0B', type: 'expense', is_system: true, sort_order: 4 },
+  { id: 5, name: 'Dining & Cafes', icon: 'dining', color: '#EC4899', type: 'expense', is_system: true, sort_order: 5 },
+  { id: 6, name: 'Transportation', icon: 'transportation', color: '#06B6D4', type: 'expense', is_system: true, sort_order: 6 },
+  { id: 7, name: 'Utilities & Bills', icon: 'utilities', color: '#6366F1', type: 'expense', is_system: true, sort_order: 7 },
+  { id: 8, name: 'Shopping', icon: 'shopping', color: '#84CC16', type: 'expense', is_system: true, sort_order: 8 },
 ];
 
 const INITIAL_TRANSACTIONS: Transaction[] = [
@@ -38,7 +38,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     category_name: 'Salary',
-    category_icon: '💰',
+    category_icon: 'salary',
     category_color: '#10B981',
   },
   {
@@ -54,7 +54,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     category_name: 'Freelance',
-    category_icon: '💻',
+    category_icon: 'freelance',
     category_color: '#3B82F6',
   },
   {
@@ -70,7 +70,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     category_name: 'Housing & Rent',
-    category_icon: '🏠',
+    category_icon: 'housing',
     category_color: '#EF4444',
   },
   {
@@ -86,7 +86,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     category_name: 'Groceries & Food',
-    category_icon: '🛒',
+    category_icon: 'groceries',
     category_color: '#F59E0B',
   },
   {
@@ -102,7 +102,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     category_name: 'Dining & Cafes',
-    category_icon: '🍔',
+    category_icon: 'dining',
     category_color: '#EC4899',
   },
 ];
@@ -121,7 +121,7 @@ const INITIAL_BUDGETS: Budget[] = [
     is_exceeded: false,
     alert_threshold: 80,
     category_name: 'Groceries & Food',
-    category_icon: '🛒',
+    category_icon: 'groceries',
     category_color: '#F59E0B',
   },
   {
@@ -137,7 +137,7 @@ const INITIAL_BUDGETS: Budget[] = [
     is_exceeded: false,
     alert_threshold: 80,
     category_name: 'Dining & Cafes',
-    category_icon: '🍔',
+    category_icon: 'dining',
     category_color: '#EC4899',
   },
   {
@@ -153,7 +153,7 @@ const INITIAL_BUDGETS: Budget[] = [
     is_exceeded: false,
     alert_threshold: 80,
     category_name: 'Transportation',
-    category_icon: '🚗',
+    category_icon: 'transportation',
     category_color: '#06B6D4',
   },
 ];
@@ -164,7 +164,7 @@ const INITIAL_SAVINGS: SavingsGoal[] = [
     user_id: 1,
     name: 'Emergency Fund',
     description: '6 months buffer',
-    icon: '🛡️',
+    icon: 'emergency',
     target_cents: 1000000,
     current_cents: 650000,
     remaining_cents: 350000,
@@ -177,7 +177,7 @@ const INITIAL_SAVINGS: SavingsGoal[] = [
     user_id: 1,
     name: 'Japan Autumn Vacation',
     description: 'Kyoto & Tokyo trip',
-    icon: '🏯',
+    icon: 'travel',
     target_cents: 350000,
     current_cents: 180000,
     remaining_cents: 170000,

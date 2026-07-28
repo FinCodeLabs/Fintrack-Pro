@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { MobileNav } from './MobileNav';
 import { Dialog } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -25,6 +26,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   children,
 }) => {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [description, setDescription] = useState('');
   const [amountDollars, setAmountDollars] = useState('45.00');
@@ -54,7 +56,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       category_id: categoryId,
       transaction_date: txDate,
       category_name: cat?.name || 'General',
-      category_icon: cat?.icon || (type === 'income' ? '💰' : '📦'),
+      category_icon: cat?.icon || (type === 'income' ? 'income' : 'expense'),
       category_color: cat?.color || '#6B7280',
     });
 
@@ -63,14 +65,29 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 relative">
+    <div className="flex min-h-screen bg-slate-950 text-slate-100 relative selection:bg-emerald-500 selection:text-white">
+      {/* Desktop Navigation Sidebar */}
       <Sidebar currentTab={currentTab} setTab={setTab} />
+
+      {/* Mobile Navigation Drawer & Bottom Bar */}
+      <MobileNav
+        isOpen={isMobileNavOpen}
+        onClose={() => setIsMobileNavOpen(false)}
+        currentTab={currentTab}
+        setTab={setTab}
+      />
+
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar title={titles[currentTab] || 'FinTrack Pro'} onQuickAdd={() => setIsQuickAddOpen(true)} />
-        <main className="p-8 flex-1 overflow-y-auto">{children}</main>
+        <Topbar
+          title={titles[currentTab] || 'FinTrack Pro'}
+          onQuickAdd={() => setIsQuickAddOpen(true)}
+          onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
+        />
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto pb-24 md:pb-8">{children}</main>
       </div>
 
-      {/* Interactive AI Assistant & Guided Tutorial Widget */}
+      {/* Interactive AI Assistant Widget */}
       <AIAssistantWidget
         currentTab={currentTab}
         setTab={setTab}
@@ -102,8 +119,22 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             </button>
           </div>
 
-          <Input label="Description" placeholder="e.g. Starbucks Coffee" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <Input label="Amount ($)" type="number" step="0.01" value={amountDollars} onChange={(e) => setAmountDollars(e.target.value)} required min="0.01" />
+          <Input
+            label="Description"
+            placeholder="e.g. Starbucks Coffee"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+          <Input
+            label="Amount ($)"
+            type="number"
+            step="0.01"
+            value={amountDollars}
+            onChange={(e) => setAmountDollars(e.target.value)}
+            required
+            min="0.01"
+          />
 
           <div>
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-1">Category</label>
@@ -116,7 +147,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 .filter((c) => c.type === type)
                 .map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.icon} {c.name}
+                    {c.name}
                   </option>
                 ))}
             </select>
@@ -125,8 +156,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           <Input label="Date" type="date" value={txDate} onChange={(e) => setTxDate(e.target.value)} required />
 
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
-            <Button variant="outline" type="button" onClick={() => setIsQuickAddOpen(false)}>Cancel</Button>
-            <Button variant="primary" type="submit">Add Record</Button>
+            <Button variant="outline" type="button" onClick={() => setIsQuickAddOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Add Record
+            </Button>
           </div>
         </form>
       </Dialog>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { PieChart, Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Dialog } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
+import { CategoryIcon } from '../components/ui/CategoryIcon';
 import { useAuthStore } from '../store/authStore';
 import { Budget, Category } from '../types';
 
@@ -41,7 +42,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
       month: new Date().getMonth() + 1,
       year: new Date().getFullYear(),
       category_name: cat?.name || 'Category',
-      category_icon: cat?.icon || '📦',
+      category_icon: cat?.icon || 'groceries',
       category_color: cat?.color || '#6B7280',
     });
 
@@ -50,19 +51,19 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-white">Monthly Category Budgets</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white">Monthly Category Budgets</h2>
           <p className="text-xs text-slate-400">Set spending limits and prevent budget overruns with active alerts.</p>
         </div>
-        <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+        <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4" />
           <span>Set Category Budget</span>
         </Button>
       </div>
 
       {/* Budget Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {budgets.map((b) => {
           const pct = Math.min(100, b.usage_percentage || 0);
           const isWarning = pct > 80;
@@ -72,9 +73,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
             <Card key={b.id} hoverable className="space-y-4 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-xl">
-                    {b.category_icon || '📦'}
-                  </div>
+                  <CategoryIcon icon={b.category_icon} name={b.category_name} size="md" />
                   <div>
                     <h4 className="font-bold text-slate-100">{b.category_name || 'Category'}</h4>
                     <p className="text-[11px] text-slate-400">Limit: {formatMoney(b.limit_cents)}</p>
@@ -135,7 +134,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.icon} {c.name}
+                  {c.name}
                 </option>
               ))}
             </select>

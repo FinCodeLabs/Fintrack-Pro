@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Target, Plus, ShieldCheck, Trophy, Sparkles } from 'lucide-react';
+import { Target, Plus, Trophy, ShieldCheck, Compass, Home, Car, Laptop, HeartPulse } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Dialog } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
+import { CategoryIcon } from '../components/ui/CategoryIcon';
 import { useAuthStore } from '../store/authStore';
 import { SavingsGoal } from '../types';
 
@@ -20,7 +21,7 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
 
   const [name, setName] = useState('');
   const [targetDollars, setTargetDollars] = useState('1000');
-  const [icon, setIcon] = useState('🎯');
+  const [icon, setIcon] = useState('target');
 
   const [depositDollars, setDepositDollars] = useState('100');
 
@@ -58,21 +59,30 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
     }
   };
 
+  const goalIcons = [
+    { key: 'target', label: 'Goal', icon: Target },
+    { key: 'emergency', label: 'Buffer', icon: ShieldCheck },
+    { key: 'travel', label: 'Vacation', icon: Compass },
+    { key: 'housing', label: 'Property', icon: Home },
+    { key: 'transportation', label: 'Vehicle', icon: Car },
+    { key: 'freelance', label: 'Tech', icon: Laptop },
+  ];
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-white">Savings Goals</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white">Savings Goals</h2>
           <p className="text-xs text-slate-400">Track long-term financial milestones, emergency buffers, and vacations.</p>
         </div>
-        <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+        <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4" />
           <span>New Savings Goal</span>
         </Button>
       </div>
 
       {/* Goals Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {savings.map((g) => {
           const pct = Math.min(100, Math.round((g.current_cents / g.target_cents) * 100) || 0);
           const isCompleted = pct >= 100;
@@ -81,9 +91,7 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
             <Card key={g.id} hoverable className="space-y-4 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/60 flex items-center justify-center text-2xl shadow-inner">
-                    {g.icon || '🎯'}
-                  </div>
+                  <CategoryIcon icon={g.icon} name={g.name} size="lg" />
                   <div>
                     <h4 className="font-bold text-slate-100">{g.name}</h4>
                     <p className="text-[11px] text-slate-400">Target: {formatMoney(g.target_cents)}</p>
@@ -127,21 +135,29 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
         <form onSubmit={handleCreate} className="space-y-4">
           <Input label="Goal Name" placeholder="e.g. Vacation to Europe" value={name} onChange={(e) => setName(e.target.value)} required />
           <Input label={`Target Amount (${symbol})`} type="number" value={targetDollars} onChange={(e) => setTargetDollars(e.target.value)} required min="1" />
+          
           <div>
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-1">Select Icon Emoji</label>
-            <div className="flex gap-2">
-              {['🎯', '🛡️', '🏯', '💻', '🚗', '🏠'].map((e) => (
-                <button
-                  key={e}
-                  type="button"
-                  onClick={() => setIcon(e)}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center border transition-all ${
-                    icon === e ? 'border-emerald-500 bg-emerald-500/20' : 'border-slate-700 bg-slate-900'
-                  }`}
-                >
-                  {e}
-                </button>
-              ))}
+            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-2">Select Goal Type</label>
+            <div className="grid grid-cols-3 gap-2">
+              {goalIcons.map((item) => {
+                const IconComponent = item.icon;
+                const isSelected = icon === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setIcon(item.key)}
+                    className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition-all ${
+                      isSelected
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 shadow-md'
+                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

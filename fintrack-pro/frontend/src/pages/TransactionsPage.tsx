@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter, Download, Plus, Trash2, Tag, Calendar, MapPin, Inbox } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { CategoryIcon } from '../components/ui/CategoryIcon';
 import { useAuthStore } from '../store/authStore';
 import { Transaction } from '../types';
 
@@ -63,17 +64,17 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-white">Transactions History</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white">Transactions History</h2>
           <p className="text-xs text-slate-400">Search, filter, export, and record financial transactions.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="md" onClick={handleExportCSV}>
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
           </Button>
-          <Button variant="primary" size="md" onClick={onNewTransaction}>
+          <Button variant="primary" size="sm" onClick={onNewTransaction}>
             <Plus className="w-4 h-4" />
             <span>Add Transaction</span>
           </Button>
@@ -82,7 +83,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
 
       {/* Filter Bar */}
       <Card className="p-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
             <input
@@ -136,7 +137,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
+            <table className="w-full text-left text-xs text-slate-300 min-w-[650px]">
               <thead className="bg-slate-900/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
                 <tr>
                   <th className="px-6 py-4">Transaction</th>
@@ -151,9 +152,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
                   <tr key={tx.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-6 py-4 font-semibold text-slate-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-base">
-                          {tx.category_icon || (tx.type === 'income' ? '💰' : '📦')}
-                        </div>
+                        <CategoryIcon icon={tx.category_icon} name={tx.category_name || tx.description} size="md" />
                         <div>
                           <p className="font-semibold text-slate-100">{tx.description || 'Transaction'}</p>
                           {tx.location && (

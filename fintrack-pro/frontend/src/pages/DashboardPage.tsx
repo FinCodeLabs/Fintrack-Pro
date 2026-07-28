@@ -1,8 +1,9 @@
 import React from 'react';
-import { DollarSign, TrendingUp, TrendingDown, PiggyBank, ArrowUpRight, ArrowDownRight, ShieldCheck, Sparkles, PlusCircle, Wallet } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, PiggyBank, ArrowUpRight, ArrowDownRight, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { CategoryIcon } from '../components/ui/CategoryIcon';
 import { useAuthStore } from '../store/authStore';
 import { Transaction, Budget, SavingsGoal } from '../types';
 
@@ -110,31 +111,31 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
       {/* Hero Welcome Banner */}
-      <div className="glass-card rounded-3xl p-8 border border-emerald-500/20 bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-slate-950 relative overflow-hidden">
+      <div className="glass-card rounded-3xl p-5 sm:p-8 border border-emerald-500/20 bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-slate-950 relative overflow-hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10" />
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 FINANCE WORKSPACE
               </span>
               <span className="text-xs text-slate-400 font-medium">• {user?.full_name || 'Personal Account'}</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Welcome back, {user?.full_name?.split(' ')[0] || 'User'}!
             </h2>
-            <p className="text-slate-400 text-sm mt-1 max-w-xl">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
               Track your cashflow, manage category budgets, and save towards your goals in your live financial dashboard.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => onNavigate('insights')}>
+            <Button variant="outline" size="sm" onClick={() => onNavigate('insights')}>
               <Sparkles className="w-4 h-4 text-emerald-400" />
               <span>AI Insights</span>
             </Button>
-            <Button variant="primary" onClick={onNewTransaction}>
+            <Button variant="primary" size="sm" onClick={onNewTransaction}>
               + Add Transaction
             </Button>
           </div>
@@ -142,7 +143,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card hoverable className="border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Net Balance</span>
@@ -150,7 +151,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-white tracking-tight">{formatMoney(netSavingsCents)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(netSavingsCents)}</p>
           <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-400">
             <ArrowUpRight className="w-4 h-4" />
             <span>Net savings buffer</span>
@@ -164,7 +165,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-white tracking-tight">{formatMoney(totalIncomeCents)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(totalIncomeCents)}</p>
           <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-teal-400">
             <ArrowUpRight className="w-4 h-4" />
             <span>{transactions.filter((t) => t.type === 'income').length} Income Entries</span>
@@ -178,7 +179,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <TrendingDown className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-white tracking-tight">{formatMoney(totalExpenseCents)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(totalExpenseCents)}</p>
           <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-rose-400">
             <ArrowDownRight className="w-4 h-4" />
             <span>{transactions.filter((t) => t.type === 'expense').length} Expense Entries</span>
@@ -192,7 +193,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <PiggyBank className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-white tracking-tight">{savingsRate}%</p>
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{savingsRate}%</p>
           <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-indigo-400">
             <ShieldCheck className="w-4 h-4" />
             <span>{Number(savingsRate) >= 20 ? 'Target achieved!' : 'Target: > 20%'}</span>
@@ -206,7 +207,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-100">Cash Flow Performance</h3>
+              <h3 className="text-base sm:text-lg font-bold text-slate-100">Cash Flow Performance</h3>
               <p className="text-xs text-slate-400">Monthly income vs expenses trend</p>
             </div>
             <div className="flex items-center gap-4 text-xs font-medium">
@@ -220,7 +221,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
             </div>
           </div>
-          <div className="h-72 w-full">
+          <div className="h-64 sm:h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={cashflowData}>
                 <defs>
@@ -249,11 +250,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <Card>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-100">Expense Breakdown</h3>
+              <h3 className="text-base sm:text-lg font-bold text-slate-100">Expense Breakdown</h3>
               <p className="text-xs text-slate-400">By category distribution</p>
             </div>
           </div>
-          <div className="h-52 w-full">
+          <div className="h-48 sm:h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={categoryChartData} innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
@@ -284,7 +285,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         {/* Recent Activity List */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-100">Recent Transactions</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-100">Recent Transactions</h3>
             <Button variant="ghost" size="sm" onClick={() => onNavigate('transactions')}>
               View All &rarr;
             </Button>
@@ -307,15 +308,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-lg">
-                      {tx.category_icon || (tx.type === 'income' ? '💰' : '📦')}
-                    </div>
+                    <CategoryIcon icon={tx.category_icon} name={tx.category_name || tx.description} size="md" />
                     <div>
-                      <p className="text-sm font-semibold text-slate-100">{tx.description || tx.category_name || 'Transaction'}</p>
-                      <p className="text-xs text-slate-400">{tx.transaction_date}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-slate-100">{tx.description || tx.category_name || 'Transaction'}</p>
+                      <p className="text-[11px] text-slate-400">{tx.transaction_date}</p>
                     </div>
                   </div>
-                  <span className={`text-sm font-extrabold ${tx.type === 'income' ? 'text-emerald-400' : 'text-slate-200'}`}>
+                  <span className={`text-xs sm:text-sm font-extrabold ${tx.type === 'income' ? 'text-emerald-400' : 'text-slate-200'}`}>
                     {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount_cents)}
                   </span>
                 </div>
@@ -327,7 +326,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         {/* Budget Progress Widget */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-100">Category Budgets</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-100">Category Budgets</h3>
             <Button variant="ghost" size="sm" onClick={() => onNavigate('budgets')}>
               Manage &rarr;
             </Button>
@@ -347,7 +346,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   <div key={b.id} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-semibold">
                       <span className="text-slate-200 flex items-center gap-2">
-                        <span>{b.category_icon || '📦'}</span>
+                        <CategoryIcon icon={b.category_icon} name={b.category_name} size="sm" />
                         <span>{b.category_name || 'Category Budget'}</span>
                       </span>
                       <span className="text-slate-400">

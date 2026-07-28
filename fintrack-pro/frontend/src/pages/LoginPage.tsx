@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useAuthStore } from '../store/authStore';
-import { Sparkles, KeyRound, Mail, ArrowRight } from 'lucide-react';
+import { Sparkles, KeyRound, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export const LoginPage: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchToRegister }) => {
   const { login, loginAsDemo, isLoading } = useAuthStore();
@@ -28,8 +28,8 @@ export const LoginPage: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwit
 
       <div className="w-full max-w-md glass-card rounded-3xl p-8 border border-slate-800 shadow-2xl space-y-6 relative z-10">
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 mx-auto flex items-center justify-center text-3xl shadow-xl shadow-emerald-500/20">
-            💎
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 mx-auto flex items-center justify-center shadow-xl shadow-emerald-500/20 font-black">
+            <ShieldCheck className="w-8 h-8 text-slate-950" />
           </div>
           <h2 className="text-2xl font-extrabold text-white tracking-tight">FinTrack <span className="text-emerald-400">Pro</span></h2>
           <p className="text-xs text-slate-400">Personal Financial Intelligence & Budgeting</p>

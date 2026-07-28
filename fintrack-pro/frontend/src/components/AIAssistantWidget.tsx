@@ -110,12 +110,12 @@ export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
   return (
     <>
       {/* Floating AI Bot Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-16 right-4 md:bottom-6 md:right-6 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all"
+          className="relative flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs sm:text-sm shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all"
         >
-          <div className="w-7 h-7 rounded-full bg-slate-950/20 flex items-center justify-center text-slate-950">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-950/20 flex items-center justify-center text-slate-950">
             <Bot className="w-4 h-4" />
           </div>
           <span>AI Advisor</span>
@@ -127,7 +127,7 @@ export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
 
       {/* Floating AI Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] glass-card rounded-3xl border border-emerald-500/30 shadow-2xl overflow-hidden z-50 flex flex-col h-[520px] animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-28 right-3 sm:right-6 w-[calc(100vw-1.5rem)] sm:w-96 glass-card rounded-3xl border border-emerald-500/30 shadow-2xl overflow-hidden z-50 flex flex-col h-[460px] sm:h-[520px] animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/60 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">

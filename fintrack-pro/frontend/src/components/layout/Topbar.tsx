@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Plus, CheckCheck, Trash2, X, AlertTriangle, CheckCircle2, BellOff } from 'lucide-react';
+import { Bell, Plus, CheckCheck, Trash2, X, AlertTriangle, CheckCircle2, BellOff, Menu, ShieldCheck } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '../../store/authStore';
 
@@ -15,6 +15,7 @@ interface NotificationItem {
 interface TopbarProps {
   title: string;
   onQuickAdd: () => void;
+  onToggleMobileNav?: () => void;
 }
 
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
@@ -36,7 +37,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
-export const Topbar: React.FC<TopbarProps> = ({ title, onQuickAdd }) => {
+export const Topbar: React.FC<TopbarProps> = ({ title, onQuickAdd, onToggleMobileNav }) => {
   const { currency, setCurrency } = useAuthStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
@@ -102,14 +103,28 @@ export const Topbar: React.FC<TopbarProps> = ({ title, onQuickAdd }) => {
   ];
 
   return (
-    <header className="h-20 border-b border-slate-800 bg-slate-950/40 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-30">
-      <div>
-        <h2 className="text-2xl font-extrabold text-white tracking-tight">{title}</h2>
+    <header className="h-16 sm:h-20 border-b border-slate-800 bg-slate-950/60 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
+      <div className="flex items-center gap-3">
+        {/* Mobile Hamburger Menu Toggle */}
+        <button
+          onClick={onToggleMobileNav}
+          className="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl md:hidden"
+          aria-label="Open navigation menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex md:hidden items-center justify-center font-black">
+            <ShieldCheck className="w-4 h-4 text-slate-950" />
+          </div>
+          <h2 className="text-lg sm:text-2xl font-extrabold text-white tracking-tight">{title}</h2>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* Currency Switcher */}
-        <div className="flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-800">
+        <div className="hidden sm:flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-800">
           {currencies.map((c) => (
             <button
               key={c.code}
@@ -126,9 +141,10 @@ export const Topbar: React.FC<TopbarProps> = ({ title, onQuickAdd }) => {
         </div>
 
         {/* Quick Add Button */}
-        <Button variant="primary" size="md" onClick={onQuickAdd}>
-          <Plus className="w-4 h-4" />
-          <span>New Transaction</span>
+        <Button variant="primary" size="md" onClick={onQuickAdd} className="px-3 sm:px-4 text-xs sm:text-sm">
+          <Plus className="w-4 h-4 shrink-0" />
+          <span className="hidden sm:inline">New Transaction</span>
+          <span className="sm:hidden">Add</span>
         </Button>
 
         {/* Notifications Button */}

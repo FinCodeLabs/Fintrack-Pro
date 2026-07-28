@@ -134,24 +134,24 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({
       </div>
 
       {/* Financial Health Score Hero */}
-      <div className="glass-card rounded-3xl p-8 border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-950 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <div className="w-24 h-24 rounded-full border-4 border-emerald-500 bg-emerald-500/10 flex items-center justify-center text-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
+      <div className="glass-card rounded-3xl p-5 sm:p-8 border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-950 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-emerald-500 bg-emerald-500/10 flex items-center justify-center text-center shadow-lg shadow-emerald-500/20 shrink-0">
             <div>
-              <span className="text-3xl font-black text-white leading-none">
+              <span className="text-2xl sm:text-3xl font-black text-white leading-none">
                 {hasTransactions ? healthScore : '--'}
               </span>
-              <span className="text-[10px] text-emerald-400 block font-bold mt-0.5">HEALTH SCORE</span>
+              <span className="text-[9px] sm:text-[10px] text-emerald-400 block font-bold mt-0.5">HEALTH SCORE</span>
             </div>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">{conditionTitle}</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-white">{conditionTitle}</h3>
             <p className="text-slate-400 text-xs mt-1 max-w-md">{conditionDesc}</p>
           </div>
         </div>
 
         {!hasTransactions && (
-          <Button variant="primary" onClick={onNewTransaction} className="flex items-center gap-2">
+          <Button variant="primary" size="sm" onClick={onNewTransaction} className="flex items-center gap-2">
             <PlusCircle className="w-4 h-4" /> + Add First Transaction
           </Button>
         )}

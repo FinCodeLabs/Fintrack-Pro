@@ -1,5 +1,15 @@
 import React from 'react';
-import { LayoutDashboard, ArrowLeftRight, PieChart, Target, Sparkles, Settings, LogOut, Wallet } from 'lucide-react';
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  PieChart,
+  Target,
+  Sparkles,
+  Settings,
+  LogOut,
+  Wallet,
+  ShieldCheck,
+} from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 interface SidebarProps {
@@ -21,15 +31,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab }) => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900/60 backdrop-blur-xl border-r border-slate-800 flex flex-col justify-between p-4 h-screen sticky top-0">
+    <aside className="hidden md:flex w-64 bg-slate-900/60 backdrop-blur-xl border-r border-slate-800 flex-col justify-between p-4 h-screen sticky top-0 shrink-0">
       <div>
         {/* Brand Header */}
         <div className="flex items-center gap-3 px-3 py-4 mb-6 border-b border-slate-800/80">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="text-xl">💎</span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 font-black">
+            <ShieldCheck className="w-6 h-6 text-slate-950" />
           </div>
           <div>
-            <h1 className="font-extrabold text-lg tracking-tight text-white leading-tight">FinTrack<span className="text-emerald-400">Pro</span></h1>
+            <h1 className="font-extrabold text-lg tracking-tight text-white leading-tight">
+              FinTrack<span className="text-emerald-400">Pro</span>
+            </h1>
             <p className="text-[11px] text-slate-400 font-medium">Financial Intelligence</p>
           </div>
         </div>
@@ -68,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab }) => {
       <div className="pt-4 border-t border-slate-800/80">
         <div className="flex items-center justify-between px-2 py-2 rounded-xl bg-slate-950/50 border border-slate-800/60 mb-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-200 text-sm">
+            <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs">
               {user?.full_name?.charAt(0) || 'A'}
             </div>
             <div className="truncate max-w-[110px]">

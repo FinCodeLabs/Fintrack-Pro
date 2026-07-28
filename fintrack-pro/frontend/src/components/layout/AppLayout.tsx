@@ -14,6 +14,8 @@ interface AppLayoutProps {
   categories: Category[];
   transactions: Transaction[];
   onAddTransaction: (tx: Partial<Transaction>) => void;
+  isQuickAddOpen: boolean;
+  setIsQuickAddOpen: (open: boolean) => void;
   children: React.ReactNode;
 }
 
@@ -23,9 +25,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   categories,
   transactions,
   onAddTransaction,
+  isQuickAddOpen,
+  setIsQuickAddOpen,
   children,
 }) => {
-  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [description, setDescription] = useState('');

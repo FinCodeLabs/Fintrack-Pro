@@ -230,6 +230,7 @@ export function App() {
   const { user, isAuthenticated, checkAuth } = useAuthStore();
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [currentTab, setTab] = useState<string>('dashboard');
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState<boolean>(false);
 
   const userId = user?.id || 1;
   const isDemo = userId === 1;
@@ -432,6 +433,8 @@ export function App() {
       categories={categories}
       transactions={transactions}
       onAddTransaction={handleAddTransaction}
+      isQuickAddOpen={isQuickAddOpen}
+      setIsQuickAddOpen={setIsQuickAddOpen}
     >
       {currentTab === 'dashboard' && (
         <DashboardPage
@@ -439,19 +442,13 @@ export function App() {
           budgets={budgets}
           savings={savings}
           onNavigate={setTab}
-          onNewTransaction={() => {
-            const btn = document.querySelector('header button') as HTMLButtonElement;
-            if (btn) btn.click();
-          }}
+          onNewTransaction={() => setIsQuickAddOpen(true)}
         />
       )}
       {currentTab === 'transactions' && (
         <TransactionsPage
           transactions={transactions}
-          onNewTransaction={() => {
-            const btn = document.querySelector('header button') as HTMLButtonElement;
-            if (btn) btn.click();
-          }}
+          onNewTransaction={() => setIsQuickAddOpen(true)}
           onDeleteTransaction={handleDeleteTransaction}
         />
       )}
@@ -474,10 +471,7 @@ export function App() {
           transactions={transactions}
           budgets={budgets}
           savings={savings}
-          onNewTransaction={() => {
-            const btn = document.querySelector('header button') as HTMLButtonElement;
-            if (btn) btn.click();
-          }}
+          onNewTransaction={() => setIsQuickAddOpen(true)}
         />
       )}
       {currentTab === 'settings' && <SettingsPage />}

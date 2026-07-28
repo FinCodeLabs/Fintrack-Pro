@@ -72,11 +72,11 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
           return (
             <Card key={b.id} hoverable className="space-y-4 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1 pr-1">
                   <CategoryIcon icon={b.category_icon} name={b.category_name} size="md" />
-                  <div>
-                    <h4 className="font-bold text-slate-100">{b.category_name || 'Category'}</h4>
-                    <p className="text-[11px] text-slate-400">Limit: {formatMoney(b.limit_cents)}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-slate-100 text-sm sm:text-base leading-tight truncate">{b.category_name || 'Category'}</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5 font-numeric">Limit: {formatMoney(b.limit_cents)}</p>
                   </div>
                 </div>
                 {isExceeded ? (

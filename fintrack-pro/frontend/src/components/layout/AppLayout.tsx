@@ -32,6 +32,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [description, setDescription] = useState('');
+  const [customSource, setCustomSource] = useState('');
   const [amountDollars, setAmountDollars] = useState('45.00');
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [categoryId, setCategoryId] = useState<number>(categories[0]?.id || 4);
@@ -78,6 +79,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     }
   };
 
+  const selectedCat = categories.find((c) => c.id === categoryId);
+  const isOther = selectedCat?.name.toLowerCase() === 'other' || categoryId === 99;
+
   const handleQuickAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const amountCents = Math.round(parseFloat(amountDollars) * 100);
@@ -88,19 +92,21 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       cat = validCats[0];
     }
     const finalCategoryId = cat ? cat.id : categoryId;
+    const catName = isOther && customSource.trim() ? customSource.trim() : (cat?.name || (type === 'income' ? 'Income' : 'General'));
 
     onAddTransaction({
-      description: description.trim() || 'New Transaction',
+      description: description.trim() || (isOther && customSource.trim() ? customSource.trim() : 'New Transaction'),
       amount_cents: amountCents,
       type,
       category_id: finalCategoryId,
       transaction_date: txDate,
-      category_name: cat?.name || (type === 'income' ? 'Salary' : 'General'),
-      category_icon: cat?.icon || (type === 'income' ? 'salary' : 'expense'),
-      category_color: cat?.color || (type === 'income' ? '#10B981' : '#6B7280'),
+      category_name: catName,
+      category_icon: isOther ? 'income' : (cat?.icon || (type === 'income' ? 'salary' : 'expense')),
+      category_color: cat?.color || (type === 'income' ? '#8B5CF6' : '#6B7280'),
     });
 
     setDescription('');
+    setCustomSource('');
     setIsQuickAddOpen(false);
   };
 
@@ -163,7 +169,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
           <Input
             label="Description"
-            placeholder="e.g. Infosys Salary or Starbucks"
+            placeholder="e.g. Dividend, Bonus, Consulting or Starbucks"
             value={description}
             onChange={(e) => handleDescriptionChange(e.target.value)}
             required
@@ -194,6 +200,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 ))}
             </select>
           </div>
+
+          {isOther && (
+            <Input
+              label="Specify Income Source / Category"
+              placeholder="e.g. Dividend, Bonus, Side Business, Gift"
+              value={customSource}
+              onChange={(e) => setCustomSource(e.target.value)}
+              required
+            />
+          )}
 
           <Input label="Date" type="date" value={txDate} onChange={(e) => setTxDate(e.target.value)} required />
 

@@ -16,12 +16,13 @@ import { api } from './lib/api';
 const DEFAULT_CATEGORIES: Category[] = [
   { id: 1, name: 'Salary', icon: 'salary', color: '#10B981', type: 'income', is_system: true, sort_order: 1 },
   { id: 2, name: 'Freelance', icon: 'freelance', color: '#3B82F6', type: 'income', is_system: true, sort_order: 2 },
-  { id: 3, name: 'Housing & Rent', icon: 'housing', color: '#EF4444', type: 'expense', is_system: true, sort_order: 3 },
-  { id: 4, name: 'Groceries & Food', icon: 'groceries', color: '#F59E0B', type: 'expense', is_system: true, sort_order: 4 },
-  { id: 5, name: 'Dining & Cafes', icon: 'dining', color: '#EC4899', type: 'expense', is_system: true, sort_order: 5 },
-  { id: 6, name: 'Transportation', icon: 'transportation', color: '#06B6D4', type: 'expense', is_system: true, sort_order: 6 },
-  { id: 7, name: 'Utilities & Bills', icon: 'utilities', color: '#6366F1', type: 'expense', is_system: true, sort_order: 7 },
-  { id: 8, name: 'Shopping', icon: 'shopping', color: '#84CC16', type: 'expense', is_system: true, sort_order: 8 },
+  { id: 99, name: 'Other', icon: 'other', color: '#8B5CF6', type: 'income', is_system: true, sort_order: 3 },
+  { id: 3, name: 'Housing & Rent', icon: 'housing', color: '#EF4444', type: 'expense', is_system: true, sort_order: 4 },
+  { id: 4, name: 'Groceries & Food', icon: 'groceries', color: '#F59E0B', type: 'expense', is_system: true, sort_order: 5 },
+  { id: 5, name: 'Dining & Cafes', icon: 'dining', color: '#EC4899', type: 'expense', is_system: true, sort_order: 6 },
+  { id: 6, name: 'Transportation', icon: 'transportation', color: '#06B6D4', type: 'expense', is_system: true, sort_order: 7 },
+  { id: 7, name: 'Utilities & Bills', icon: 'utilities', color: '#6366F1', type: 'expense', is_system: true, sort_order: 8 },
+  { id: 8, name: 'Shopping', icon: 'shopping', color: '#84CC16', type: 'expense', is_system: true, sort_order: 9 },
 ];
 
 const INITIAL_TRANSACTIONS: Transaction[] = [
@@ -255,6 +256,13 @@ export function App() {
     });
   };
 
+  const sanitizeBudgets = (bgtList: Budget[]): Budget[] => {
+    return bgtList.filter((b) => {
+      const cName = (b.category_name || '').toLowerCase();
+      return b.category_id !== 1 && b.category_id !== 2 && cName !== 'salary' && cName !== 'freelance' && cName !== 'investments';
+    });
+  };
+
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
       const saved = localStorage.getItem(`fintrack_transactions_${userId}`);
@@ -266,7 +274,7 @@ export function App() {
   const [budgets, setBudgets] = useState<Budget[]>(() => {
     try {
       const saved = localStorage.getItem(`fintrack_budgets_${userId}`);
-      if (saved) return JSON.parse(saved);
+      if (saved) return sanitizeBudgets(JSON.parse(saved));
     } catch {}
     return isDemo ? INITIAL_BUDGETS : [];
   });
@@ -290,7 +298,7 @@ export function App() {
   useEffect(() => {
     checkAuth();
     // Auto migration check to purge stale cache and sync dynamic budgets
-    const CURRENT_VERSION = 'v4_category_sanitization';
+    const CURRENT_VERSION = 'v5_expense_budgets_only';
     const savedVer = localStorage.getItem('fintrack_app_version');
     if (savedVer !== CURRENT_VERSION) {
       localStorage.removeItem('fintrack_transactions_1');
@@ -314,7 +322,7 @@ export function App() {
         setTransactions(txs ? sanitizeTransactions(JSON.parse(txs)) : isUserDemo ? INITIAL_TRANSACTIONS : []);
 
         const bgt = localStorage.getItem(`fintrack_budgets_${user.id}`);
-        setBudgets(bgt ? JSON.parse(bgt) : isUserDemo ? INITIAL_BUDGETS : []);
+        setBudgets(bgt ? sanitizeBudgets(JSON.parse(bgt)) : isUserDemo ? INITIAL_BUDGETS : []);
 
         const svg = localStorage.getItem(`fintrack_savings_${user.id}`);
         setSavings(svg ? JSON.parse(svg) : isUserDemo ? INITIAL_SAVINGS : []);

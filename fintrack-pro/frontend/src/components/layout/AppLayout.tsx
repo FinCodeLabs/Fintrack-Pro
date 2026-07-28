@@ -47,20 +47,57 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     settings: 'Settings',
   };
 
+  const handleTypeChange = (newType: 'income' | 'expense') => {
+    setType(newType);
+    const validCats = categories.filter((c) => c.type === newType);
+    if (validCats.length > 0) {
+      setCategoryId(validCats[0].id);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isQuickAddOpen) {
+      const validCats = categories.filter((c) => c.type === type);
+      if (validCats.length > 0 && !validCats.some((c) => c.id === categoryId)) {
+        setCategoryId(validCats[0].id);
+      }
+    }
+  }, [isQuickAddOpen, type, categories, categoryId]);
+
+  const handleDescriptionChange = (val: string) => {
+    setDescription(val);
+    const lower = val.toLowerCase();
+    if (lower.includes('infosys') || lower.includes('salary') || lower.includes('paycheck')) {
+      if (type !== 'income') {
+        setType('income');
+        const salaryCat = categories.find((c) => c.type === 'income' && c.name.toLowerCase().includes('salary'));
+        if (salaryCat) {
+          setCategoryId(salaryCat.id);
+        }
+      }
+    }
+  };
+
   const handleQuickAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const amountCents = Math.round(parseFloat(amountDollars) * 100);
-    const cat = categories.find((c) => c.id === categoryId);
+
+    const validCats = categories.filter((c) => c.type === type);
+    let cat = validCats.find((c) => c.id === categoryId);
+    if (!cat && validCats.length > 0) {
+      cat = validCats[0];
+    }
+    const finalCategoryId = cat ? cat.id : categoryId;
 
     onAddTransaction({
-      description,
+      description: description.trim() || 'New Transaction',
       amount_cents: amountCents,
       type,
-      category_id: categoryId,
+      category_id: finalCategoryId,
       transaction_date: txDate,
-      category_name: cat?.name || 'General',
-      category_icon: cat?.icon || (type === 'income' ? 'income' : 'expense'),
-      category_color: cat?.color || '#6B7280',
+      category_name: cat?.name || (type === 'income' ? 'Salary' : 'General'),
+      category_icon: cat?.icon || (type === 'income' ? 'salary' : 'expense'),
+      category_color: cat?.color || (type === 'income' ? '#10B981' : '#6B7280'),
     });
 
     setDescription('');
@@ -106,7 +143,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           <div className="flex gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
             <button
               type="button"
-              onClick={() => setType('expense')}
+              onClick={() => handleTypeChange('expense')}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                 type === 'expense' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
@@ -115,7 +152,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setType('income')}
+              onClick={() => handleTypeChange('income')}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                 type === 'income' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
@@ -126,9 +163,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
           <Input
             label="Description"
-            placeholder="e.g. Starbucks Coffee"
+            placeholder="e.g. Infosys Salary or Starbucks"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => handleDescriptionChange(e.target.value)}
             required
           />
           <Input

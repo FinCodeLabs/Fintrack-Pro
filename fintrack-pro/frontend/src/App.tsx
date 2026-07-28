@@ -237,10 +237,28 @@ export function App() {
 
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
 
+  const sanitizeTransactions = (txList: Transaction[]): Transaction[] => {
+    return txList.map((t) => {
+      const descLower = (t.description || '').toLowerCase();
+      const isInfosysOrSalary = descLower.includes('infosys') || descLower.includes('salary') || descLower.includes('paycheck');
+      if (isInfosysOrSalary || (t.type === 'income' && (t.category_name === 'Dining & Cafes' || t.category_id === 5))) {
+        return {
+          ...t,
+          category_id: 1,
+          category_name: 'Salary',
+          category_icon: 'salary',
+          category_color: '#10B981',
+          type: 'income',
+        };
+      }
+      return t;
+    });
+  };
+
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
       const saved = localStorage.getItem(`fintrack_transactions_${userId}`);
-      if (saved) return JSON.parse(saved);
+      if (saved) return sanitizeTransactions(JSON.parse(saved));
     } catch {}
     return isDemo ? INITIAL_TRANSACTIONS : [];
   });
@@ -272,7 +290,7 @@ export function App() {
   useEffect(() => {
     checkAuth();
     // Auto migration check to purge stale cache and sync dynamic budgets
-    const CURRENT_VERSION = 'v3_dynamic_budget_calc';
+    const CURRENT_VERSION = 'v4_category_sanitization';
     const savedVer = localStorage.getItem('fintrack_app_version');
     if (savedVer !== CURRENT_VERSION) {
       localStorage.removeItem('fintrack_transactions_1');
@@ -293,7 +311,7 @@ export function App() {
       try {
         const isUserDemo = user.id === 1;
         const txs = localStorage.getItem(`fintrack_transactions_${user.id}`);
-        setTransactions(txs ? JSON.parse(txs) : isUserDemo ? INITIAL_TRANSACTIONS : []);
+        setTransactions(txs ? sanitizeTransactions(JSON.parse(txs)) : isUserDemo ? INITIAL_TRANSACTIONS : []);
 
         const bgt = localStorage.getItem(`fintrack_budgets_${user.id}`);
         setBudgets(bgt ? JSON.parse(bgt) : isUserDemo ? INITIAL_BUDGETS : []);

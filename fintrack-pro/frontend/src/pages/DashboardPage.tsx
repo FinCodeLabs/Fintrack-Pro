@@ -189,7 +189,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 </span>
               </div>
             </div>
-            <button className="text-xs text-slate-400 hover:text-white font-semibold transition-colors">
+            <button
+              onClick={() => onNavigate('analytics')}
+              className="text-xs text-slate-400 hover:text-emerald-400 font-semibold transition-colors"
+            >
               Show more &gt;
             </button>
           </div>
@@ -220,7 +223,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-white">All Expense</h3>
-              <button className="text-xs text-slate-400 hover:text-white font-semibold transition-colors">
+              <button
+                onClick={() => onNavigate('budgets')}
+                className="text-xs text-slate-400 hover:text-emerald-400 font-semibold transition-colors"
+              >
                 Show more &gt;
               </button>
             </div>

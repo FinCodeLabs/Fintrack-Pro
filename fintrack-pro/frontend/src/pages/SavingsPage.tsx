@@ -89,20 +89,20 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
 
           return (
             <Card key={g.id} hoverable className="space-y-4 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1 pr-1">
                   <CategoryIcon icon={g.icon} name={g.name} size="lg" />
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-bold text-slate-100 text-sm sm:text-base leading-tight truncate">{g.name}</h4>
+                    <h4 className="font-bold text-white text-sm sm:text-base leading-snug break-words" title={g.name}>{g.name}</h4>
                     <p className="text-[11px] text-slate-400 mt-0.5 font-numeric">Target: {formatMoney(g.target_cents)}</p>
                   </div>
                 </div>
                 {isCompleted ? (
-                  <span className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                  <span className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0">
                     <Trophy className="w-5 h-5" />
                   </span>
                 ) : (
-                  <Button variant="outline" size="sm" onClick={() => setDepositModalGoal(g)}>
+                  <Button variant="outline" size="sm" onClick={() => setDepositModalGoal(g)} className="shrink-0 text-xs px-2.5 py-1">
                     + Deposit
                   </Button>
                 )}

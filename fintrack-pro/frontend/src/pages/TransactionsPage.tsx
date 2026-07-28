@@ -140,17 +140,17 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
             <table className="w-full text-left text-xs text-slate-300 min-w-[650px]">
               <thead className="bg-slate-900/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">Transaction</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Transaction</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Category</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Date</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Amount</th>
+                  <th className="px-6 py-4 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredTransactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-slate-100">
+                    <td className="px-6 py-4 font-semibold text-slate-100 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <CategoryIcon icon={tx.category_icon} name={tx.category_name || tx.description} size="md" />
                         <div>
@@ -163,16 +163,16 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-800 border border-slate-700 text-slate-300">
                         <Tag className="w-3 h-3 text-emerald-400" />
                         {tx.category_name || 'General'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-mono text-slate-400">
+                    <td className="px-6 py-4 font-mono text-slate-400 whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                        {tx.transaction_date}
+                        <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <span className="whitespace-nowrap">{tx.transaction_date}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 font-extrabold text-sm">

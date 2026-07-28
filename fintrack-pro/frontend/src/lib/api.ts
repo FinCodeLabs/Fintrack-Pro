@@ -72,6 +72,7 @@ export const api = {
     return request<Budget[]>(`/budgets?${q}`);
   },
   createBudget: (data: Partial<Budget>) => request<Budget>('/budgets', { method: 'POST', body: JSON.stringify(data) }),
+  deleteBudget: (id: number) => request<any>(`/budgets/${id}`, { method: 'DELETE' }),
 
   // Savings Goals
   getSavingsGoals: () => request<SavingsGoal[]>('/savings'),

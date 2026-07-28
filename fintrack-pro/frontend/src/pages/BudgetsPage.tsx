@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Plus, AlertCircle, CheckCircle2, Trash2 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Dialog } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { CategoryIcon } from '../components/ui/CategoryIcon';
 import { useAuthStore } from '../store/authStore';
-import { Budget, Category } from '../types';
+import { Budget, Category, Transaction } from '../types';
 
 interface BudgetsPageProps {
   budgets: Budget[];
+  transactions: Transaction[];
   categories: Category[];
   onAddBudget: (b: Partial<Budget>) => void;
+  onDeleteBudget?: (id: number) => void;
 }
 
-export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, onAddBudget }) => {
+export const BudgetsPage: React.FC<BudgetsPageProps> = ({
+  budgets,
+  transactions,
+  categories,
+  onAddBudget,
+  onDeleteBudget,
+}) => {
   const { currency } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -24,7 +32,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
   const symbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency === 'INR' ? '₹' : '$';
 
   const formatMoney = (cents: number) => {
-    return `${symbol}${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    return `${symbol}${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const handleCreate = (e: React.FormEvent) => {
@@ -65,12 +73,23 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
       {/* Budget Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {budgets.map((b) => {
-          const pct = Math.min(100, b.usage_percentage || 0);
-          const isWarning = pct > 80;
-          const isExceeded = b.is_exceeded || pct >= 100;
+          // Dynamic Spending calculation from actual transactions
+          const spentCents = (transactions || [])
+            .filter((t) => t.type === 'expense' && (
+              t.category_id === b.category_id ||
+              t.category_name?.toLowerCase() === b.category_name?.toLowerCase() ||
+              t.category_icon?.toLowerCase() === b.category_icon?.toLowerCase()
+            ))
+            .reduce((sum, t) => sum + t.amount_cents, 0);
+
+          const remainingCents = Math.max(0, b.limit_cents - spentCents);
+          const rawPct = b.limit_cents > 0 ? Math.round((spentCents / b.limit_cents) * 100) : 0;
+          const pct = Math.min(100, rawPct);
+          const isWarning = rawPct >= 80 && rawPct < 100;
+          const isExceeded = spentCents >= b.limit_cents;
 
           return (
-            <Card key={b.id} hoverable className="space-y-4 relative overflow-hidden">
+            <Card key={b.id} hoverable className="space-y-4 relative overflow-hidden group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0 flex-1 pr-1">
                   <CategoryIcon icon={b.category_icon} name={b.category_name} size="md" />
@@ -79,25 +98,38 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
                     <p className="text-[11px] text-slate-400 mt-0.5 font-numeric">Limit: {formatMoney(b.limit_cents)}</p>
                   </div>
                 </div>
-                {isExceeded ? (
-                  <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" /> Exceeded
-                  </span>
-                ) : isWarning ? (
-                  <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" /> Warning
-                  </span>
-                ) : (
-                  <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> On Track
-                  </span>
-                )}
+
+                <div className="flex items-center gap-2">
+                  {isExceeded ? (
+                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1 shrink-0">
+                      <AlertCircle className="w-3 h-3" /> Exceeded
+                    </span>
+                  ) : isWarning ? (
+                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 shrink-0">
+                      <AlertCircle className="w-3 h-3" /> Warning
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 shrink-0">
+                      <CheckCircle2 className="w-3 h-3" /> On Track
+                    </span>
+                  )}
+
+                  {onDeleteBudget && (
+                    <button
+                      onClick={() => onDeleteBudget(b.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all"
+                      title="Delete Budget"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-slate-400">Spent: {formatMoney(b.spent_cents)}</span>
-                  <span className="text-slate-100">{pct}%</span>
+                  <span className="text-slate-400">Spent: {formatMoney(spentCents)}</span>
+                  <span className="text-slate-100">{rawPct}%</span>
                 </div>
                 <div className="h-3 w-full bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800">
                   <div
@@ -111,8 +143,8 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({ budgets, categories, o
 
               <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium">
                 <span>Remaining:</span>
-                <span className={`font-bold ${b.remaining_cents > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {formatMoney(b.remaining_cents)}
+                <span className={`font-bold font-numeric ${remainingCents > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {formatMoney(remainingCents)}
                 </span>
               </div>
             </Card>

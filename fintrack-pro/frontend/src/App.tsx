@@ -156,6 +156,22 @@ const INITIAL_BUDGETS: Budget[] = [
     category_icon: 'transportation',
     category_color: '#06B6D4',
   },
+  {
+    id: 4,
+    user_id: 1,
+    category_id: 8,
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+    limit_cents: 49000,
+    spent_cents: 0,
+    remaining_cents: 49000,
+    usage_percentage: 0,
+    is_exceeded: false,
+    alert_threshold: 80,
+    category_name: 'Shopping',
+    category_icon: 'shopping',
+    category_color: '#84CC16',
+  },
 ];
 
 const INITIAL_SAVINGS: SavingsGoal[] = [
@@ -254,8 +270,8 @@ export function App() {
 
   useEffect(() => {
     checkAuth();
-    // Auto migration check to purge stale emoji cache from browser localStorage
-    const CURRENT_VERSION = 'v2_vector_professional';
+    // Auto migration check to purge stale cache and sync dynamic budgets
+    const CURRENT_VERSION = 'v3_dynamic_budget_calc';
     const savedVer = localStorage.getItem('fintrack_app_version');
     if (savedVer !== CURRENT_VERSION) {
       localStorage.removeItem('fintrack_transactions_1');
@@ -364,6 +380,11 @@ export function App() {
     setBudgets((prev) => [...prev, budget]);
   };
 
+  const handleDeleteBudget = (id: number) => {
+    setBudgets((prev) => prev.filter((b) => b.id !== id));
+    api.deleteBudget(id).catch(() => {});
+  };
+
   const handleAddSavingsGoal = (g: Partial<SavingsGoal>) => {
     const goal: SavingsGoal = {
       id: Date.now(),
@@ -435,7 +456,13 @@ export function App() {
         />
       )}
       {currentTab === 'budgets' && (
-        <BudgetsPage budgets={budgets} categories={categories} onAddBudget={handleAddBudget} />
+        <BudgetsPage
+          budgets={budgets}
+          transactions={transactions}
+          categories={categories}
+          onAddBudget={handleAddBudget}
+          onDeleteBudget={handleDeleteBudget}
+        />
       )}
       {currentTab === 'savings' && (
         <SavingsPage savings={savings} onAddGoal={handleAddSavingsGoal} onDeposit={handleDepositSavings} />

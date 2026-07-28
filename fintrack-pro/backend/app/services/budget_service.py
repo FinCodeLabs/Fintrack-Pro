@@ -4,6 +4,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import NotFoundException, BadRequestException
 from app.models.budget import Budget
+from app.models.category import Category
 from app.models.transaction import Transaction, TransactionType
 from app.repositories.budget_repository import BudgetRepository
 from app.schemas.budget import BudgetCreate, BudgetUpdate
@@ -34,6 +35,10 @@ class BudgetService:
         return budgets
 
     async def create_budget(self, user_id: int, data: BudgetCreate) -> Budget:
+        cat = await self.session.get(Category, data.category_id)
+        if cat and cat.type != TransactionType.EXPENSE:
+            raise BadRequestException("Budgets can only be set for expense categories.")
+
         existing = await self.repo.get_by_category_and_period(
             user_id, data.category_id, data.month, data.year
         )

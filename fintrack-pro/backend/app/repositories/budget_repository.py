@@ -22,6 +22,7 @@ class BudgetRepository(BaseRepository[Budget]):
                 Budget.user_id == user_id,
                 Budget.month == month,
                 Budget.year == year,
+                Category.type == TransactionType.EXPENSE,
             )
             .order_by(Category.name.asc())
         )

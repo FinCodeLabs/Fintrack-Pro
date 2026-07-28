@@ -26,7 +26,12 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
   const { currency } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [categoryId, setCategoryId] = useState<number>(categories[0]?.id || 1);
+  const expenseCategories = categories.filter((c) => c.type === 'expense');
+
+  const [categoryId, setCategoryId] = useState<number>(() => {
+    const firstExpense = categories.find((c) => c.type === 'expense');
+    return firstExpense ? firstExpense.id : (categories[0]?.id || 1);
+  });
   const [limitDollars, setLimitDollars] = useState<string>('500');
 
   const symbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency === 'INR' ? '₹' : '$';
@@ -57,6 +62,11 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
     setIsModalOpen(false);
   };
 
+  const displayBudgets = budgets.filter((b) => {
+    const cat = categories.find((c) => c.id === b.category_id);
+    return !cat || cat.type === 'expense';
+  });
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -64,7 +74,17 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
           <h2 className="text-xl sm:text-2xl font-extrabold text-white">Monthly Category Budgets</h2>
           <p className="text-xs text-slate-400">Set spending limits and prevent budget overruns with active alerts.</p>
         </div>
-        <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            const firstExpense = categories.find((c) => c.type === 'expense');
+            if (firstExpense && !expenseCategories.some((c) => c.id === categoryId)) {
+              setCategoryId(firstExpense.id);
+            }
+            setIsModalOpen(true);
+          }}
+        >
           <Plus className="w-4 h-4" />
           <span>Set Category Budget</span>
         </Button>
@@ -72,7 +92,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
 
       {/* Budget Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {budgets.map((b) => {
+        {displayBudgets.map((b) => {
           // Dynamic Spending calculation from actual transactions
           const spentCents = (transactions || [])
             .filter((t) => t.type === 'expense' && (
@@ -164,7 +184,7 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
               onChange={(e) => setCategoryId(Number(e.target.value))}
               className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/70 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
             >
-              {categories.map((c) => (
+              {expenseCategories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

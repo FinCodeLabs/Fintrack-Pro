@@ -14,7 +14,10 @@
 
   body {
     font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    @apply bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-white min-h-screen tracking-normal;
+    background-color: #0b0e14;
+    color: #f1f5f9;
+    min-height: 100vh;
+    letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -30,25 +33,24 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.8);
+  background: #0b0e14;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.7);
+  background: #1e2333;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 0.9);
+  background: #2a3045;
 }
 
-/* Executive Glassmorphism & Card Utility Classes */
+/* Image 2 Reference Glassmorphism & Card Utility Classes */
 .glass-card {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  background: #131722;
+  border: 1px solid #1e2333;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  border-radius: 1rem;
 }
 
 .glass-card-hover {
@@ -56,10 +58,10 @@
 }
 
 .glass-card-hover:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: #181c2b;
+  border-color: #2a3045;
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
 }
 
 /* Gradient text utilities */
@@ -69,13 +71,33 @@
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-blue {
-  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+.text-gradient-purple {
+  background: linear-gradient(135deg, #c084fc 0%, #7e22ce 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* Tabular Financial Numbers */
 .font-numeric {
   font-family: 'JetBrains Mono', monospace, sans-serif;
   font-variant-numeric: tabular-nums;
+}
+
+/* Custom Status Pills matching Image 2 */
+.badge-approved {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-declined {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.badge-pending {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }

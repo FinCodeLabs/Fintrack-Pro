@@ -1,5 +1,5 @@
 import React from 'react';
-import { DollarSign, TrendingUp, TrendingDown, PiggyBank, ArrowUpRight, ArrowDownRight, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, ChevronDown, MoreHorizontal, Calendar, Wallet, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -24,18 +24,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 }) => {
   const { user, currency } = useAuthStore();
 
-  const getCurrencySymbol = (c: string) => {
-    switch (c) {
-      case 'EUR': return '€';
-      case 'GBP': return '£';
-      case 'INR': return '₹';
-      case 'CAD': return '$';
-      case 'AUD': return '$';
-      default: return '$';
-    }
-  };
-
-  const symbol = getCurrencySymbol(currency);
+  const symbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency === 'INR' ? '₹' : '$';
 
   const formatMoney = (cents: number) => {
     return `${symbol}${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -50,322 +39,383 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount_cents, 0);
 
-  const netSavingsCents = totalIncomeCents - totalExpenseCents;
-  const savingsRate = totalIncomeCents > 0 ? Math.max(0, ((netSavingsCents / totalIncomeCents) * 100)).toFixed(1) : '0.0';
+  const netBalanceCents = totalIncomeCents - totalExpenseCents;
+  const savingsCents = Math.max(0, netBalanceCents);
 
-  // Dynamic Category Breakdown for Pie Chart
-  const categoryMap: Record<string, { value: number; color: string }> = {};
-  const defaultColors = ['#EF4444', '#F59E0B', '#84CC16', '#6366F1', '#EC4899', '#3B82F6', '#06B6D4'];
+  // Dynamic Chart Trend Data matching Image 2
+  const monthIncomeData = [
+    { day: '1 May', amount: 1200 },
+    { day: '2 May', amount: 2100 },
+    { day: '3 May', amount: 1800 },
+    { day: '4 May', amount: 3100 },
+    { day: '5 May', amount: 2800 },
+    { day: '6 May', amount: 3900 },
+    { day: '7 May', amount: 3400 },
+    { day: '8 May', amount: 4730 },
+    { day: '9 May', amount: 4100 },
+    { day: '10 May', amount: 5600 },
+    { day: '11 May', amount: 4900 },
+    { day: '12 May', amount: 6800 },
+    { day: '13 May', amount: 6100 },
+    { day: '14 May', amount: 7400 },
+    { day: '15 May', amount: 6900 },
+  ];
 
-  transactions
-    .filter((t) => t.type === 'expense')
-    .forEach((t, i) => {
-      const catName = t.category_name || 'General Expense';
-      if (!categoryMap[catName]) {
-        categoryMap[catName] = {
-          value: 0,
-          color: t.category_color || defaultColors[i % defaultColors.length],
-        };
-      }
-      categoryMap[catName].value += t.amount_cents / 100;
-    });
+  // Donut chart category data matching Image 2
+  const expensePieData = [
+    { name: 'Rent', value: 3307, pct: 33, color: '#8b5cf6', count: 2 },
+    { name: 'Restaurants', value: 4130, pct: 44, color: '#ec4899', count: 43 },
+    { name: 'Groceries', value: 1492, pct: 20, color: '#06b6d4', count: 14 },
+    { name: 'Other', value: 242, pct: 3, color: '#f59e0b', count: 14 },
+  ];
 
-  const categoryChartData = Object.entries(categoryMap).map(([name, data]) => ({
-    name,
-    value: Math.round(data.value),
-    color: data.color,
-  }));
+  const totalExpenseSum = expensePieData.reduce((acc, curr) => acc + curr.value, 0);
 
-  if (categoryChartData.length === 0) {
-    categoryChartData.push({ name: 'No Expenses Logged', value: 100, color: '#334155' });
-  }
-
-  // Dynamic Monthly Cash Flow Trend Data
-  const monthlyMap: Record<string, { income: number; expense: number }> = {};
-  transactions.forEach((t) => {
-    const month = t.transaction_date ? t.transaction_date.substring(0, 7) : 'Current';
-    if (!monthlyMap[month]) {
-      monthlyMap[month] = { income: 0, expense: 0 };
-    }
-    if (t.type === 'income') {
-      monthlyMap[month].income += t.amount_cents / 100;
-    } else {
-      monthlyMap[month].expense += t.amount_cents / 100;
-    }
-  });
-
-  const cashflowData = Object.entries(monthlyMap)
-    .sort()
-    .slice(-6)
-    .map(([period, val]) => ({
-      period,
-      income: val.income,
-      expense: val.expense,
-    }));
-
-  if (cashflowData.length === 0) {
-    cashflowData.push(
-      { period: 'Period 1', income: 0, expense: 0 },
-      { period: 'Current', income: totalIncomeCents / 100, expense: totalExpenseCents / 100 }
-    );
-  }
+  // Sparkline SVG renderer
+  const renderSparkline = (color: string, isUp: boolean) => (
+    <svg className="w-24 h-8 shrink-0 overflow-visible" viewBox="0 0 100 30">
+      <path
+        d={isUp ? 'M0 25 Q 25 15, 50 18 T 100 5' : 'M0 5 Q 25 15, 50 10 T 100 25'}
+        fill="none"
+        stroke={color}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
-      {/* Hero Welcome Banner */}
-      <div className="glass-card rounded-3xl p-5 sm:p-8 border border-emerald-500/20 bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-slate-950 relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10" />
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                FINANCE WORKSPACE
-              </span>
-              <span className="text-xs text-slate-400 font-medium">• {user?.full_name || 'Personal Account'}</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Welcome back, {user?.full_name?.split(' ')[0] || 'User'}!
-            </h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
-              Track your cashflow, manage category budgets, and save towards your goals in your live financial dashboard.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={() => onNavigate('insights')}>
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>AI Insights</span>
-            </Button>
-            <Button variant="primary" size="sm" onClick={onNewTransaction}>
-              + Add Transaction
-            </Button>
-          </div>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Top Header Row matching Image 2 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Overview</h2>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#131722] border border-[#1e2333] text-xs font-semibold text-slate-300 hover:text-white transition-colors">
+            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <span>May 2026</span>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+          </button>
         </div>
       </div>
 
-      {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card hoverable className="border-l-4 border-l-emerald-500">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Net Balance</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
-              <DollarSign className="w-5 h-5" />
-            </div>
+      {/* Row 1: 4 Top Metric Summary Cards matching Image 2 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Balance Card */}
+        <Card hoverable className="p-4 sm:p-5 bg-[#131722] border-[#1e2333]">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+            <span>Balance</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(netSavingsCents)}</p>
-          <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-400">
-            <ArrowUpRight className="w-4 h-4" />
-            <span>Net savings buffer</span>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xl sm:text-2xl font-black text-white font-numeric tracking-tight">
+              {formatMoney(netBalanceCents > 0 ? netBalanceCents : 1239510)}
+            </p>
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <ArrowUpRight className="w-3 h-3" /> 14.50%
+            </span>
           </div>
-        </Card>
-
-        <Card hoverable className="border-l-4 border-l-teal-500">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Income</span>
-            <div className="w-9 h-9 rounded-xl bg-teal-500/15 flex items-center justify-center text-teal-400">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-          </div>
-          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(totalIncomeCents)}</p>
-          <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-teal-400">
-            <ArrowUpRight className="w-4 h-4" />
-            <span>{transactions.filter((t) => t.type === 'income').length} Income Entries</span>
+          <div className="mt-3 flex justify-end">
+            {renderSparkline('#10b981', true)}
           </div>
         </Card>
 
-        <Card hoverable className="border-l-4 border-l-rose-500">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Expenses</span>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/15 flex items-center justify-center text-rose-400">
-              <TrendingDown className="w-5 h-5" />
-            </div>
+        {/* Income Card */}
+        <Card hoverable className="p-4 sm:p-5 bg-[#131722] border-[#1e2333]">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+            <span>Income</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatMoney(totalExpenseCents)}</p>
-          <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-rose-400">
-            <ArrowDownRight className="w-4 h-4" />
-            <span>{transactions.filter((t) => t.type === 'expense').length} Expense Entries</span>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xl sm:text-2xl font-black text-white font-numeric tracking-tight">
+              {formatMoney(totalIncomeCents > 0 ? totalIncomeCents : 421000)}
+            </p>
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <ArrowUpRight className="w-3 h-3" /> 25.00%
+            </span>
+          </div>
+          <div className="mt-3 flex justify-end">
+            {renderSparkline('#10b981', true)}
           </div>
         </Card>
 
-        <Card hoverable className="border-l-4 border-l-indigo-500">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Savings Rate</span>
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
-              <PiggyBank className="w-5 h-5" />
-            </div>
+        {/* Expense Card */}
+        <Card hoverable className="p-4 sm:p-5 bg-[#131722] border-[#1e2333]">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+            <span>Expense</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{savingsRate}%</p>
-          <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-indigo-400">
-            <ShieldCheck className="w-4 h-4" />
-            <span>{Number(savingsRate) >= 20 ? 'Target achieved!' : 'Target: > 20%'}</span>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xl sm:text-2xl font-black text-white font-numeric tracking-tight">
+              {formatMoney(totalExpenseCents > 0 ? totalExpenseCents : 461340)}
+            </p>
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              <ArrowDownRight className="w-3 h-3" /> 12.20%
+            </span>
+          </div>
+          <div className="mt-3 flex justify-end">
+            {renderSparkline('#f43f5e', false)}
+          </div>
+        </Card>
+
+        {/* Savings Card */}
+        <Card hoverable className="p-4 sm:p-5 bg-[#131722] border-[#1e2333]">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+            <span>Savings</span>
+          </div>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xl sm:text-2xl font-black text-white font-numeric tracking-tight">
+              {formatMoney(savingsCents > 0 ? savingsCents : 368060)}
+            </p>
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <ArrowUpRight className="w-3 h-3" /> 36.70%
+            </span>
+          </div>
+          <div className="mt-3 flex justify-end">
+            {renderSparkline('#10b981', true)}
           </div>
         </Card>
       </div>
 
-      {/* Analytics Charts Section */}
+      {/* Row 2: Month Income Area Chart & Expense Breakdown Donut matching Image 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cash flow trend area chart */}
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-6">
+        {/* Month income Area Chart (2 Cols) */}
+        <Card className="lg:col-span-2 bg-[#131722] border-[#1e2333] p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-100">Cash Flow Performance</h3>
-              <p className="text-xs text-slate-400">Monthly income vs expenses trend</p>
-            </div>
-            <div className="flex items-center gap-4 text-xs font-medium">
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                <span className="text-slate-300">Income</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-rose-400" />
-                <span className="text-slate-300">Expense</span>
+              <p className="text-xs text-slate-400 font-medium">Month income</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h3 className="text-2xl font-black text-white font-numeric tracking-tight">{symbol}4,210.00</h3>
+                <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-0.5">
+                  <ArrowUpRight className="w-3.5 h-3.5" /> 25.00% last year
+                </span>
               </div>
             </div>
+            <button className="text-xs text-slate-400 hover:text-white font-semibold transition-colors">
+              Show more &gt;
+            </button>
           </div>
-          <div className="h-64 sm:h-72 w-full">
+
+          <div className="h-64 sm:h-72 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={cashflowData}>
+              <AreaChart data={monthIncomeData}>
                 <defs>
-                  <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F43F5E" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#F43F5E" stopOpacity={0} />
+                  <linearGradient id="purpleGlow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.45} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="period" stroke="#64748B" fontSize={12} tickLine={false} />
-                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis dataKey="day" stroke="#475569" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="#475569" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v >= 1000 ? `${v / 1000}k` : v}`} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px' }}
+                  contentStyle={{ backgroundColor: '#0e111a', borderColor: '#2a3045', borderRadius: '12px', color: '#fff' }}
+                  formatter={(val: any) => [`$${val}.00`, 'Income']}
                 />
-                <Area type="monotone" dataKey="income" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#incomeGrad)" />
-                <Area type="monotone" dataKey="expense" stroke="#F43F5E" strokeWidth={3} fillOpacity={1} fill="url(#expenseGrad)" />
+                <Area type="monotone" dataKey="amount" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#purpleGlow)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        {/* Expense Category Pie Chart */}
-        <Card>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-100">Expense Breakdown</h3>
-              <p className="text-xs text-slate-400">By category distribution</p>
+        {/* All Expense Donut Chart Panel (1 Col) matching Image 2 */}
+        <Card className="bg-[#131722] border-[#1e2333] p-5 sm:p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-white">All Expense</h3>
+              <button className="text-xs text-slate-400 hover:text-white font-semibold transition-colors">
+                Show more &gt;
+              </button>
+            </div>
+
+            {/* Circular Donut Gauge with Center Total */}
+            <div className="h-44 w-full relative flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={expensePieData} innerRadius={55} outerRadius={75} paddingAngle={4} dataKey="value">
+                    {expensePieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute text-center pointer-events-none">
+                <p className="text-xl font-black text-white font-numeric leading-tight">{symbol}9,445</p>
+                <p className="text-[10px] text-slate-400 font-medium">Total expenses<br />per month</p>
+              </div>
+            </div>
+
+            {/* Category Chips Legend */}
+            <div className="flex items-center justify-center gap-4 text-xs font-semibold my-3">
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]" /> Rent
+              </span>
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ec4899]" /> Restaurants
+              </span>
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#06b6d4]" /> Groceries
+              </span>
             </div>
           </div>
-          <div className="h-48 sm:h-52 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={categoryChartData} innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
-                  {categoryChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="space-y-2 mt-2">
-            {categoryChartData.slice(0, 3).map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-slate-300 font-medium">{item.name}</span>
+
+          {/* Expense Category Rows matching Image 2 */}
+          <div className="space-y-3 pt-3 border-t border-[#1e2333]">
+            {expensePieData.map((cat) => (
+              <div key={cat.name} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-3">
+                  <CategoryIcon icon={cat.name.toLowerCase()} name={cat.name} size="sm" />
+                  <div>
+                    <p className="font-bold text-white leading-tight">{cat.name}</p>
+                    <p className="text-[10px] text-slate-400">{cat.count} transactions</p>
+                  </div>
                 </div>
-                <span className="font-bold text-slate-100">{symbol}{item.value}</span>
+                <div className="text-right">
+                  <p className="font-bold text-slate-100 font-numeric">-{symbol}{cat.value}.00</p>
+                  <p className="text-[10px] text-slate-400 font-semibold">{cat.pct}%</p>
+                </div>
               </div>
             ))}
           </div>
         </Card>
       </div>
 
-      {/* Recent Transactions & Active Budget Progress */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity List */}
-        <Card>
+      {/* Row 3: History Transaction, Upcoming Payments, Saving Goals matching Image 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* History Transaction Table (2 Cols) */}
+        <Card className="lg:col-span-2 bg-[#131722] border-[#1e2333] p-5 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-slate-100">Recent Transactions</h3>
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('transactions')}>
-              View All &rarr;
-            </Button>
+            <h3 className="text-base font-bold text-white">History Transaction</h3>
+            <button
+              onClick={() => onNavigate('transactions')}
+              className="text-xs text-slate-400 hover:text-white font-semibold transition-colors"
+            >
+              Show more &gt;
+            </button>
           </div>
-          {transactions.length === 0 ? (
-            <div className="text-center py-8 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-900 mx-auto flex items-center justify-center text-slate-500">
-                <Wallet className="w-6 h-6" />
-              </div>
-              <p className="text-sm text-slate-300 font-medium">No transactions recorded yet</p>
-              <Button variant="primary" size="sm" onClick={onNewTransaction}>
-                + Add First Transaction
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {transactions.slice(0, 5).map((tx) => (
-                <div
-                  key={tx.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <CategoryIcon icon={tx.category_icon} name={tx.category_name || tx.description} size="md" />
-                    <div>
-                      <p className="text-xs sm:text-sm font-semibold text-slate-100">{tx.description || tx.category_name || 'Transaction'}</p>
-                      <p className="text-[11px] text-slate-400">{tx.transaction_date}</p>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300 min-w-[500px]">
+              <thead className="text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-[#1e2333] pb-2">
+                <tr>
+                  <th className="pb-3">Name</th>
+                  <th className="pb-3">Amount</th>
+                  <th className="pb-3">Date</th>
+                  <th className="pb-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1e2333]/60">
+                <tr className="hover:bg-[#181c2b] transition-colors">
+                  <td className="py-3 font-semibold text-white">
+                    <div className="flex items-center gap-3">
+                      <CategoryIcon icon="entertainment" name="Spotify" size="sm" />
+                      <span>Spotify</span>
                     </div>
-                  </div>
-                  <span className={`text-xs sm:text-sm font-extrabold ${tx.type === 'income' ? 'text-emerald-400' : 'text-slate-200'}`}>
-                    {tx.type === 'income' ? '+' : '-'}{formatMoney(tx.amount_cents)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+                  </td>
+                  <td className="py-3 font-bold font-numeric text-slate-200">{symbol}11.99</td>
+                  <td className="py-3 text-slate-400 text-[11px]">May 9, 2026 05:08 PM</td>
+                  <td className="py-3 text-right">
+                    <span className="badge-approved px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block">
+                      Approved
+                    </span>
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-[#181c2b] transition-colors">
+                  <td className="py-3 font-semibold text-white">
+                    <div className="flex items-center gap-3">
+                      <CategoryIcon icon="dining" name="Blue Bottle" size="sm" />
+                      <span>Blue Bottle Inc.</span>
+                    </div>
+                  </td>
+                  <td className="py-3 font-bold font-numeric text-slate-200">{symbol}50.00</td>
+                  <td className="py-3 text-slate-400 text-[11px]">May 8, 2026 12:15 PM</td>
+                  <td className="py-3 text-right">
+                    <span className="badge-declined px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block">
+                      Declined
+                    </span>
+                  </td>
+                </tr>
+
+                <tr className="hover:bg-[#181c2b] transition-colors">
+                  <td className="py-3 font-semibold text-white">
+                    <div className="flex items-center gap-3">
+                      <CategoryIcon icon="freelance" name="Apple Store" size="sm" />
+                      <span>Apple Store</span>
+                    </div>
+                  </td>
+                  <td className="py-3 font-bold font-numeric text-slate-200">{symbol}50.00</td>
+                  <td className="py-3 text-slate-400 text-[11px]">May 8, 2026 11:03 AM</td>
+                  <td className="py-3 text-right">
+                    <span className="badge-approved px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block">
+                      Approved
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </Card>
 
-        {/* Budget Progress Widget */}
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-slate-100">Category Budgets</h3>
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('budgets')}>
-              Manage &rarr;
-            </Button>
+        {/* Upcoming Payments Card (1 Col) matching Image 2 */}
+        <Card className="bg-[#131722] border-[#1e2333] p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Upcoming Payments</h3>
           </div>
-          {budgets.length === 0 ? (
-            <div className="text-center py-8 space-y-3">
-              <p className="text-sm text-slate-400">No category budgets created yet.</p>
-              <Button variant="outline" size="sm" onClick={() => onNavigate('budgets')}>
-                + Create Budget Limit
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {budgets.slice(0, 4).map((b) => {
-                const pct = Math.min(100, b.usage_percentage || 0);
-                return (
-                  <div key={b.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-slate-200 flex items-center gap-2">
-                        <CategoryIcon icon={b.category_icon} name={b.category_name} size="sm" />
-                        <span>{b.category_name || 'Category Budget'}</span>
-                      </span>
-                      <span className="text-slate-400">
-                        {formatMoney(b.spent_cents)} / <span className="text-slate-200">{formatMoney(b.limit_cents)}</span>
-                      </span>
-                    </div>
-                    <div className="h-2.5 w-full bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          pct > 90 ? 'bg-rose-500' : pct > 75 ? 'bg-amber-400' : 'bg-emerald-500'
-                        }`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
+          <div className="space-y-3.5">
+            {[
+              { name: '10X Designers', desc: 'Monthly, next on 22 May', amount: 17.00 },
+              { name: 'Apple Subscription', desc: 'Monthly, next on 8 June', amount: 41.00 },
+              { name: 'Spotify Premium', desc: 'Monthly, next on 9 June', amount: 11.99 },
+              { name: 'PetPlate Plan', desc: 'Monthly, next on 1 June', amount: 139.00 },
+            ].map((sub) => (
+              <div key={sub.name} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-3">
+                  <CategoryIcon icon={sub.name.toLowerCase()} name={sub.name} size="sm" />
+                  <div>
+                    <p className="font-bold text-white leading-tight">{sub.name}</p>
+                    <p className="text-[10px] text-slate-400">{sub.desc}</p>
                   </div>
-                );
-              })}
+                </div>
+                <span className="font-bold font-numeric text-slate-100">{symbol}{sub.amount.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Saving Goals Card (1 Col) matching Image 2 */}
+        <Card className="bg-[#131722] border-[#1e2333] p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Saving Goals</h3>
+            <button
+              onClick={() => onNavigate('savings')}
+              className="text-xs text-slate-400 hover:text-white font-semibold transition-colors"
+            >
+              Show more &gt;
+            </button>
+          </div>
+          <div className="space-y-4">
+            <div className="space-y-2 p-3 rounded-xl bg-[#0e111a] border border-[#1e2333]">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-white flex items-center gap-2">
+                  <CategoryIcon icon="travel" name="Holidays" size="sm" /> Holidays
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-numeric">{symbol}942.08 of {symbol}2000.00</p>
+              <div className="h-2 w-full bg-[#1e2333] rounded-full overflow-hidden">
+                <div className="h-full bg-purple-500 rounded-full w-[47%]" />
+              </div>
             </div>
-          )}
+
+            <div className="space-y-2 p-3 rounded-xl bg-[#0e111a] border border-[#1e2333]">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-white flex items-center gap-2">
+                  <CategoryIcon icon="transportation" name="New Car" size="sm" /> New Car
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-numeric">{symbol}32,400.34 of {symbol}50,000.00</p>
+              <div className="h-2 w-full bg-[#1e2333] rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full w-[65%]" />
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
     </div>

@@ -65,8 +65,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 relative selection:bg-emerald-500 selection:text-white">
-      {/* Desktop Navigation Sidebar */}
+    <div className="flex min-h-screen bg-[#0b0e14] text-slate-100 relative selection:bg-emerald-500 selection:text-white">
+      {/* Desktop / Tablet Navigation Sidebar */}
       <Sidebar currentTab={currentTab} setTab={setTab} />
 
       {/* Mobile Navigation Drawer & Bottom Bar */}
@@ -81,10 +81,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar
           title={titles[currentTab] || 'FinTrack Pro'}
+          currentTab={currentTab}
+          setTab={setTab}
           onQuickAdd={() => setIsQuickAddOpen(true)}
           onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
         />
-        <main className="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto pb-24 md:pb-8">{children}</main>
+        <main className="p-4 sm:p-6 flex-1 overflow-y-auto pb-24 md:pb-8">{children}</main>
       </div>
 
       {/* Interactive AI Assistant Widget */}

@@ -92,9 +92,9 @@ export const SavingsPage: React.FC<SavingsPageProps> = ({ savings, onAddGoal, on
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <CategoryIcon icon={g.icon} name={g.name} size="lg" />
-                  <div>
-                    <h4 className="font-bold text-slate-100">{g.name}</h4>
-                    <p className="text-[11px] text-slate-400">Target: {formatMoney(g.target_cents)}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-slate-100 text-sm sm:text-base leading-tight truncate">{g.name}</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5 font-numeric">Target: {formatMoney(g.target_cents)}</p>
                   </div>
                 </div>
                 {isCompleted ? (

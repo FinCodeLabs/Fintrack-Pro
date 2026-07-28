@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Plus, CheckCheck, Trash2, X, AlertTriangle, CheckCircle2, BellOff, Menu, ShieldCheck, Search, User } from 'lucide-react';
+import { Bell, Plus, CheckCheck, Trash2, X, AlertTriangle, CheckCircle2, BellOff, Menu, ShieldCheck, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuthStore } from '../../store/authStore';
 
@@ -151,15 +151,6 @@ export const Topbar: React.FC<TopbarProps> = ({ title, currentTab, setTab, onQui
           <span className="hidden sm:inline lg:hidden">Add</span>
           <span className="sm:hidden">Add</span>
         </Button>
-
-        {/* Search Icon button */}
-        <button
-          onClick={() => setTab('transactions')}
-          className="p-2 text-slate-400 hover:text-white bg-[#131722] hover:bg-[#181c2b] rounded-xl border border-[#1e2333] transition-colors"
-          title="Search transactions"
-        >
-          <Search className="w-4 h-4" />
-        </button>
 
         {/* Notifications Button */}
         <div className="relative" ref={dropdownRef}>

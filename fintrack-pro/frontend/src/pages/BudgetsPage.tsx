@@ -26,11 +26,18 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
   const { currency } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const expenseCategories = categories.filter((c) => c.type === 'expense');
+  const isExpenseCategory = (c: Category) => {
+    const typeLower = (c.type || '').toLowerCase();
+    const nameLower = (c.name || '').toLowerCase();
+    const isIncomeName = nameLower === 'salary' || nameLower === 'freelance' || nameLower === 'investments';
+    return typeLower !== 'income' && !isIncomeName;
+  };
+
+  const expenseCategories = categories.filter(isExpenseCategory);
 
   const [categoryId, setCategoryId] = useState<number>(() => {
-    const firstExpense = categories.find((c) => c.type === 'expense');
-    return firstExpense ? firstExpense.id : (categories[0]?.id || 1);
+    const firstExpense = categories.find(isExpenseCategory);
+    return firstExpense ? firstExpense.id : 3;
   });
   const [limitDollars, setLimitDollars] = useState<string>('500');
 
@@ -64,7 +71,9 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
 
   const displayBudgets = budgets.filter((b) => {
     const cat = categories.find((c) => c.id === b.category_id);
-    return !cat || cat.type === 'expense';
+    if (cat) return isExpenseCategory(cat);
+    const bNameLower = (b.category_name || '').toLowerCase();
+    return bNameLower !== 'salary' && bNameLower !== 'freelance' && bNameLower !== 'investments';
   });
 
   return (
@@ -78,8 +87,8 @@ export const BudgetsPage: React.FC<BudgetsPageProps> = ({
           variant="primary"
           size="sm"
           onClick={() => {
-            const firstExpense = categories.find((c) => c.type === 'expense');
-            if (firstExpense && !expenseCategories.some((c) => c.id === categoryId)) {
+            const firstExpense = categories.find(isExpenseCategory);
+            if (firstExpense) {
               setCategoryId(firstExpense.id);
             }
             setIsModalOpen(true);
